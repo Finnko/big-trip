@@ -58,5 +58,5 @@ const repeat = (count, fn) => {
 
 export {
   getRandomInRange, getRandomArrayItem, getRandomDate, formatTime, repeat, renderComponent,
-  timeTagFormatted, castDateFormat,
+  timeTagFormatted, castDateFormat, castTimeFormat
 };

@@ -26,7 +26,7 @@ renderComponent(controlElement, createMenuTemplate());
 renderComponent(controlElement, createFilterTemplate());
 
 renderComponent(contentElement, createSortTemplate());
-renderComponent(contentElement, createEditTemplate());
+renderComponent(contentElement, createEditTemplate(eventsData[0]));
 renderComponent(contentElement, createTripDaysContainerTemplate());
 
 const tripDaysContainer = document.querySelector(`.trip-days`);
