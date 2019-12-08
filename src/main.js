@@ -7,7 +7,12 @@ import {createTripDaysContainerTemplate} from "./components/trip-day-container";
 import {createTripDayTemplate} from "./components/trip-day";
 import {createTripEventTemplate} from "./components/trip-event";
 
-const EVENTS_COUNT = 3;
+import {renderComponent} from "./utils";
+import {generateEvents} from "./mocks/event";
+
+const EVENTS_COUNT = 5;
+
+const eventsData = generateEvents(EVENTS_COUNT);
 
 const siteHeaderElement = document.querySelector(`.page-header`);
 const siteMainElement = document.querySelector(`.page-main`);
@@ -15,13 +20,6 @@ const routeElement = siteHeaderElement.querySelector(`.trip-info`);
 const controlElement = siteHeaderElement.querySelector(`.trip-controls`);
 const contentElement = siteMainElement.querySelector(`.trip-events`);
 
-const renderComponent = (container, template, position = `beforeend`) => {
-  container.insertAdjacentHTML(position, template);
-};
-
-const repeat = (count, fn) => {
-  Array(count).fill(``).forEach(fn);
-};
 
 renderComponent(routeElement, createTripInfoTemplate());
 renderComponent(controlElement, createMenuTemplate());
@@ -35,6 +33,5 @@ const tripDaysContainer = document.querySelector(`.trip-days`);
 renderComponent(tripDaysContainer, createTripDayTemplate());
 
 const tripDay = document.querySelector(`.trip-events__list`);
-repeat(EVENTS_COUNT, () => {
-  renderComponent(tripDay, createTripEventTemplate());
-});
+
+eventsData.forEach((eventPoint) => renderComponent(tripDay, createTripEventTemplate(eventPoint)));
