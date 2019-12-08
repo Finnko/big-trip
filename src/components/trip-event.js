@@ -9,7 +9,7 @@ const createOffersMarkup = (offers) => {
        &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
   </li>`
     );
-  }).join(`\n`);
+  }).slice(0, 3).join(`\n`);
 };
 
 const getEventTimeDuration = (dateStart, dateEnd) => {

@@ -21,7 +21,7 @@ const controlElement = siteHeaderElement.querySelector(`.trip-controls`);
 const contentElement = siteMainElement.querySelector(`.trip-events`);
 
 
-renderComponent(routeElement, createTripInfoTemplate());
+renderComponent(routeElement, createTripInfoTemplate(eventsData));
 renderComponent(controlElement, createMenuTemplate());
 renderComponent(controlElement, createFilterTemplate());
 
