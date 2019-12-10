@@ -22,6 +22,19 @@ const getRandomDate = () => {
   return targetDate;
 };
 
+const getRandomTime = (date) => {
+  const month = date.getMonth();
+  const targetDate = new Date(timeTagFormatted(date).slice(0, -6));
+
+  const hours = getRandomInRange(0, 23);
+  const minutes = getRandomInRange(0, 59);
+
+  targetDate.setMonth(month);
+  targetDate.setHours(hours, minutes);
+
+  return targetDate;
+};
+
 const castTimeFormat = (value) => {
   return value < 10 ? `0${value}` : String(value);
 };
@@ -34,14 +47,14 @@ const timeTagFormatted = (date) => {
   const year = date.getFullYear();
   const month = castTimeFormat(date.getMonth());
   const day = castTimeFormat(date.getDate());
-  const hours = castTimeFormat(date.getHours() % 12);
+  const hours = castTimeFormat(date.getHours());
   const minutes = castTimeFormat(date.getMinutes());
 
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 };
 
 const formatTime = (date) => {
-  const hours = castTimeFormat(date.getHours() % 12);
+  const hours = castTimeFormat(date.getHours());
   const minutes = castTimeFormat(date.getMinutes());
 
   return `${hours}:${minutes}`;
@@ -58,5 +71,5 @@ const repeat = (count, fn) => {
 
 export {
   getRandomInRange, getRandomArrayItem, getRandomDate, formatTime, repeat, renderComponent,
-  timeTagFormatted, castDateFormat, castTimeFormat
+  timeTagFormatted, castDateFormat, castTimeFormat, getRandomTime
 };

@@ -1,15 +1,17 @@
-import {eventOptions} from "../const";
+import {eventOptions, eventTypes} from "../const";
 import {formatTime, castTimeFormat} from "../utils";
 
+const YEAR_OFFSET = 2;
+
 const castDateTimeFormat = (date) => {
-  const year = date.getFullYear().toString().substring(2);
+  const year = date.getFullYear().toString().substring(YEAR_OFFSET);
   const month = castTimeFormat(date.getMonth());
   const day = castTimeFormat(date.getDate());
 
   return `${day}/${month}/${year} ${formatTime(date)}`;
 };
 
-const generateImgagesMarkup = (images) => {
+const generateImagesMarkup = (images) => {
   return images.map((image) => {
     return (
       `<img class="event__photo" src="${image}" alt="Event photo">`
@@ -17,6 +19,27 @@ const generateImgagesMarkup = (images) => {
   }).join(`\n`);
 };
 
+const generateAllTypesMarkup = (allTypes, currentType) => {
+  return allTypes.map((type) => {
+    const isChecked = allTypes.some((chosenType) => chosenType === currentType);
+
+    return (
+      `<div class="event__type-item">
+         <input 
+           id="event-type-${type}-1"
+           class="event__type-input  visually-hidden"
+           type="radio"
+           name="event-type"
+           value="${type}"
+           ${isChecked ? `checked` : ``}
+         >
+         <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">
+          ${type}
+         </label>
+       </div>`
+    );
+  }).join(`\n`);
+};
 
 const generateAllOffersMarkup = (allOffers, chosenOffers) => {
   return allOffers.map((offer) => {
@@ -42,12 +65,13 @@ const generateAllOffersMarkup = (allOffers, chosenOffers) => {
   }).join(`\n`);
 };
 
-const createEditTemplate = (eventPoint) => {
-  const {type, description, photos, dateStart, dateEnd, options} = eventPoint;
+const createEditTemplate = (day) => {
+  const {type, description, photos, dateStart, dateEnd, options} = day.events;
 
   const timeStartFormatted = castDateTimeFormat(dateStart);
   const timeEndFormatted = castDateTimeFormat(dateEnd);
-  const images = generateImgagesMarkup(photos);
+  const images = generateImagesMarkup(photos);
+  const types = generateAllTypesMarkup(eventTypes, type);
   const offers = generateAllOffersMarkup(eventOptions, options);
 
   return (`
@@ -62,34 +86,7 @@ const createEditTemplate = (eventPoint) => {
           <div class="event__type-list">
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Transfer</legend>
-              <div class="event__type-item">
-                <input id="event-type-taxi-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="taxi">
-                <label class="event__type-label  event__type-label--taxi" for="event-type-taxi-1">Taxi</label>
-              </div>
-              <div class="event__type-item">
-                <input id="event-type-bus-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="bus">
-                <label class="event__type-label  event__type-label--bus" for="event-type-bus-1">Bus</label>
-              </div>
-              <div class="event__type-item">
-                <input id="event-type-train-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="train">
-                <label class="event__type-label  event__type-label--train" for="event-type-train-1">Train</label>
-              </div>
-              <div class="event__type-item">
-                <input id="event-type-ship-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="ship">
-                <label class="event__type-label  event__type-label--ship" for="event-type-ship-1">Ship</label>
-              </div>
-              <div class="event__type-item">
-                <input id="event-type-transport-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="transport">
-                <label class="event__type-label  event__type-label--transport" for="event-type-transport-1">Transport</label>
-              </div>
-              <div class="event__type-item">
-                <input id="event-type-drive-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="drive">
-                <label class="event__type-label  event__type-label--drive" for="event-type-drive-1">Drive</label>
-              </div>
-              <div class="event__type-item">
-                <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight" checked>
-                <label class="event__type-label  event__type-label--flight" for="event-type-flight-1">Flight</label>
-              </div>
+              ${types}
             </fieldset>
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Activity</legend>

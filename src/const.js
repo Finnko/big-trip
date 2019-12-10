@@ -41,4 +41,6 @@ const monthNames = [
   `Dec`,
 ];
 
-export {eventOptions, monthNames};
+const eventTypes = [`taxi`, `bus`, `train`, `ship`, `drive`, `flight`, `check-in`, `sightseeing`, `restaurant`];
+
+export {eventOptions, eventTypes, monthNames};
