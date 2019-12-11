@@ -21,7 +21,7 @@ const generateImagesMarkup = (images) => {
 
 const generateAllTypesMarkup = (allTypes, currentType) => {
   return allTypes.map((type) => {
-    const isChecked = allTypes.some((chosenType) => chosenType === currentType);
+    const isChecked = allTypes.find((chosenType) => chosenType === currentType);
 
     return (
       `<div class="event__type-item">

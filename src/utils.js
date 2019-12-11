@@ -22,6 +22,20 @@ const getRandomDate = () => {
   return targetDate;
 };
 
+const getUniqueDays = (days, uniqueDays = []) => {
+
+  days.forEach((item) => {
+    const someDate = uniqueDays.some((uniqueItem) =>
+      timeTagFormatted(new Date(item.date)).slice(0, -6) === timeTagFormatted(new Date(uniqueItem.date)).slice(0, -6));
+
+    if (!someDate) {
+      uniqueDays.push(item);
+    }
+  });
+
+  return uniqueDays;
+};
+
 const getRandomTime = (date) => {
   const month = date.getMonth();
   const targetDate = new Date(timeTagFormatted(date).slice(0, -6));
@@ -64,12 +78,11 @@ const renderComponent = (container, template, position = `beforeend`) => {
   container.insertAdjacentHTML(position, template);
 };
 
-
 const repeat = (count, fn) => {
   return Array(count).fill(``).map(fn);
 };
 
 export {
   getRandomInRange, getRandomArrayItem, getRandomDate, formatTime, repeat, renderComponent,
-  timeTagFormatted, castDateFormat, castTimeFormat, getRandomTime
+  timeTagFormatted, castDateFormat, castTimeFormat, getRandomTime, getUniqueDays
 };

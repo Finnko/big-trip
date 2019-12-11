@@ -4,10 +4,6 @@ import {generateEvent} from "./event";
 const EVENTS_MIN = 1;
 const EVENTS_MAX = 4;
 
-// const generateEvents = (count, startDate, endDate) => {
-//   return repeat(count, generateEvent(startDate, endDate));
-// };
-
 const generateDay = () => {
   const targetDate = getRandomDate();
   const startEvent = getRandomTime(targetDate);
@@ -35,4 +31,4 @@ const generateDays = (count) => {
   return repeat(count, generateDay);
 };
 
-export {generateDay, generateDays};
+export {generateDays};

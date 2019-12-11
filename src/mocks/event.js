@@ -15,21 +15,24 @@ const DESC_MAX_NUMBER = 3;
 
 const cities = [`Moscow`, `Amsterdam`, `Paris`, `New-York`, `Tokio`, `Helsinki`, `Geneva`];
 
-const defaultDescription = [`Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras aliquet varius magna, non porta ligula feugiat eget. Fusce tristique felis at fermentum pharetra. Aliquam id orci ut lectus varius viverra. Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante. Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum. Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui. Sed sed nisi sed augue convallis suscipit in sed felis. Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.`];
-const descriptions = defaultDescription.toString().split(`. `).sort(() => Math.random() - 0.5);
+const defaultDescription = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras aliquet varius magna, non porta ligula feugiat eget. Fusce tristique felis at fermentum pharetra. Aliquam id orci ut lectus varius viverra. Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante. Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum. Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui. Sed sed nisi sed augue convallis suscipit in sed felis. Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.`.split(`. `);
 
 const generatePhoto = () => `http://picsum.photos/300/150?r=${Math.random()}`;
 
-const generatePhrase = () => getRandomArrayItem(descriptions);
+const generatePhrase = () => getRandomArrayItem(defaultDescription);
 
 const generateOption = () => getRandomArrayItem(eventOptions);
 
 
 const generateEvent = (startDate, endDate) => {
+  const type = getRandomArrayItem(eventTypes);
+  const city = getRandomArrayItem(cities);
+  const title = `${type} to ${city}`;
+
   return {
-    type: getRandomArrayItem(eventTypes),
-    title: `Title`,
-    city: getRandomArrayItem(cities),
+    type,
+    title,
+    city,
     description: repeat(getRandomInRange(DESC_MIN_NUMBER, DESC_MAX_NUMBER), generatePhrase),
     photos: repeat(getRandomInRange(PHOTOS_MIN_PER_CARD, PHOTOS_MAX_PER_CARD), generatePhoto),
     dateStart: startDate,
