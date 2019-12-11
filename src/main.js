@@ -23,5 +23,5 @@ renderComponent(controlElement, createMenuTemplate());
 renderComponent(controlElement, createFilterTemplate());
 
 renderComponent(contentElement, createSortTemplate());
-renderComponent(contentElement, createEditTemplate(sortedDaysData[0]));
+renderComponent(contentElement, createEditTemplate(sortedDaysData[0].events[0]));
 renderComponent(contentElement, createTripDaysContainerTemplate(sortedDaysData.slice(1)));

@@ -1,4 +1,4 @@
-import {getRandomDate, getRandomTime, repeat} from "../utils";
+import {getRandomDate, getRandomTime, repeat, getRandomInRange} from "../utils";
 import {generateEvent} from "./event";
 
 // const generateEvents = (count, startDate, endDate) => {
@@ -17,7 +17,10 @@ const generateDay = () => {
   }
 
   let eventsData = [];
-  eventsData.push(generateEvent(dateStart, dateEnd));
+
+  for (let i = 0; i <= getRandomInRange(2, 4); i++) {
+    eventsData.push(generateEvent(dateStart, dateEnd));
+  }
 
   return {
     date: targetDate,

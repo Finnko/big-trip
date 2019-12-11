@@ -25,7 +25,7 @@ const generateAllTypesMarkup = (allTypes, currentType) => {
 
     return (
       `<div class="event__type-item">
-         <input 
+         <input
            id="event-type-${type}-1"
            class="event__type-input  visually-hidden"
            type="radio"
@@ -48,7 +48,7 @@ const generateAllOffersMarkup = (allOffers, chosenOffers) => {
 
     return (
       `<div class="event__offer-selector">
-         <input 
+         <input
            class="event__offer-checkbox  visually-hidden"
            id="event-offer-${type}-1"
            type="checkbox"
@@ -65,8 +65,8 @@ const generateAllOffersMarkup = (allOffers, chosenOffers) => {
   }).join(`\n`);
 };
 
-const createEditTemplate = (day) => {
-  const {type, description, photos, dateStart, dateEnd, options} = day.events;
+const createEditTemplate = (event) => {
+  const {type, description, photos, dateStart, dateEnd, options} = event;
 
   const timeStartFormatted = castDateTimeFormat(dateStart);
   const timeEndFormatted = castDateTimeFormat(dateEnd);

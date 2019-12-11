@@ -12,7 +12,8 @@ const createTripDayTemplate = (eventDate, events) => {
   const year = date.getFullYear().toString().slice(0, YEAR_OFFSET);
   const timeTagDateFormat = timeTagFormatted(date).slice(0, TIME_TAG_OFFSET);
   console.log(events);
-  // const eventsMarkup = createTripEventTemplate(events).join(`\n`);
+
+  const eventsMarkup = events.map((event) => createTripEventTemplate(event)).join(`\n`);
 
   return (
     `<li class="trip-days__item  day">
@@ -21,7 +22,7 @@ const createTripDayTemplate = (eventDate, events) => {
         <time class="day__date" datetime="${timeTagDateFormat}">${month} ${year}</time>
       </div>
       <ul class="trip-events__list">
-   
+        ${eventsMarkup}
       </ul>
      </li>`
   );
