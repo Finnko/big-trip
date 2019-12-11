@@ -4,17 +4,16 @@ const getTripDuration = (events) => {
   const dateStart = events[0].dateStart;
   const dateEnd = events[events.length - 1].dateEnd;
 
-  return (dateStart.getTime() < dateEnd.getTime())
-    ? `${monthNames[dateStart.getMonth()]} ${dateStart.getDate()} &mdash; ${dateEnd.getDate()}`
-    : `${monthNames[dateEnd.getMonth()]} ${dateEnd.getDate()} &mdash; ${dateStart.getDate()}`;
+  return `${monthNames[dateStart.getMonth()]} ${dateStart.getDate()} &mdash; ${dateEnd.getDate()}`;
 };
 
 const getTotalTripPrice = (events) => {
   return events.reduce((accum, currentValue) => accum + currentValue.price, 0);
 };
 
-const createTripInfoTemplate = (events) => {
-  events.slice().sort((a, b) => a.dateStart.getTime() - b.dateStart.getTime());
+const createTripInfoTemplate = (daysData) => {
+  const events = daysData.map((item) => item.events).flat();
+
   const title = events.map((item) => item.city).join(` &mdash; `);
   const duration = getTripDuration(events);
   const total = getTotalTripPrice(events);

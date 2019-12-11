@@ -9,9 +9,9 @@ const createTripDayTemplate = (eventDate, events) => {
   const date = new Date(eventDate);
   const day = date.getDate();
   const month = monthNames[date.getMonth()];
-  const year = date.getFullYear().toString().slice(0, YEAR_OFFSET);
+  const year = date.getFullYear().toString().slice(YEAR_OFFSET);
+
   const timeTagDateFormat = timeTagFormatted(date).slice(0, TIME_TAG_OFFSET);
-  console.log(events);
 
   const eventsMarkup = events.map((event) => createTripEventTemplate(event)).join(`\n`);
 
