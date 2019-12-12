@@ -1,13 +1,18 @@
-import {createTripInfoTemplate} from "./components/trip-info";
 import {createMenuTemplate} from "./components/menu";
 import {createFilterTemplate} from "./components/filter";
 import {createSortTemplate} from "./components/sort-form";
-import {createEditTemplate} from "./components/trip-form";
+import {createTripInfoTemplate} from "./components/trip-info";
 import {createTripDaysContainerTemplate} from "./components/trip-day-container";
-import {createTripDayTemplate} from "./components/trip-day";
-import {createTripEventTemplate} from "./components/trip-event";
+import {createEditTemplate} from "./components/trip-form";
 
-const EVENTS_COUNT = 3;
+import {getUniqueDays, renderComponent} from "./utils";
+import {generateDays} from "./mocks/days";
+
+const DAYS_COUNT = 10;
+const daysData = generateDays(DAYS_COUNT);
+
+const sortedDaysData = daysData.slice().sort((a, b) => a.date.getTime() - b.date.getTime());
+const uniqueDays = getUniqueDays(sortedDaysData);
 
 const siteHeaderElement = document.querySelector(`.page-header`);
 const siteMainElement = document.querySelector(`.page-main`);
@@ -15,26 +20,10 @@ const routeElement = siteHeaderElement.querySelector(`.trip-info`);
 const controlElement = siteHeaderElement.querySelector(`.trip-controls`);
 const contentElement = siteMainElement.querySelector(`.trip-events`);
 
-const renderComponent = (container, template, position = `beforeend`) => {
-  container.insertAdjacentHTML(position, template);
-};
-
-const repeat = (count, fn) => {
-  Array(count).fill(``).forEach(fn);
-};
-
-renderComponent(routeElement, createTripInfoTemplate());
+renderComponent(routeElement, createTripInfoTemplate(uniqueDays));
 renderComponent(controlElement, createMenuTemplate());
 renderComponent(controlElement, createFilterTemplate());
 
 renderComponent(contentElement, createSortTemplate());
-renderComponent(contentElement, createEditTemplate());
-renderComponent(contentElement, createTripDaysContainerTemplate());
-
-const tripDaysContainer = document.querySelector(`.trip-days`);
-renderComponent(tripDaysContainer, createTripDayTemplate());
-
-const tripDay = document.querySelector(`.trip-events__list`);
-repeat(EVENTS_COUNT, () => {
-  renderComponent(tripDay, createTripEventTemplate());
-});
+renderComponent(contentElement, createEditTemplate(uniqueDays[0].events[0]));
+renderComponent(contentElement, createTripDaysContainerTemplate(uniqueDays.slice(1)));
