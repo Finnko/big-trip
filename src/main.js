@@ -26,13 +26,13 @@ const renderTripDay = (eventDate, events) => {
     const eventComponent = new TripEventComponent(event);
     const eventEditComponent = new TripEventEditComponent(event);
     const editButton = eventComponent.getElement().querySelector(`.event__rollup-btn`);
-    const submitButton = eventEditComponent.getElement().querySelector(`.event__save-btn`);
+    const eventForm = eventEditComponent.getElement();
 
     editButton.addEventListener(`click`, function () {
       eventListElement.replaceChild(eventEditComponent.getElement(), eventComponent.getElement());
     });
 
-    submitButton.addEventListener(`click`, function () {
+    eventForm.addEventListener(`submit`, function () {
       eventListElement.replaceChild(eventComponent.getElement(), eventEditComponent.getElement());
     });
 
