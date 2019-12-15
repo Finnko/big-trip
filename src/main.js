@@ -1,18 +1,16 @@
-import {createMenuTemplate} from "./components/menu";
-import {createFilterTemplate} from "./components/filter";
-import {createSortTemplate} from "./components/sort-form";
-import {createTripInfoTemplate} from "./components/trip-info";
-import {createTripDaysContainerTemplate} from "./components/trip-day-container";
-import {createEditTemplate} from "./components/trip-form";
+import MenuComponent from "./components/menu";
+import FilterComponent from "./components/filter";
+import TripInfoComponent from "./components/trip-info";
+import TripBoardComponent from "./components/trip-board";
+import SortComponent from "./components/sort-form";
+import TripDayComponent from "./components/trip-day";
+import TripEventComponent from "./components/trip-event";
+import TripEventEditComponent from "./components/trip-form";
 
-import {getUniqueDays, renderComponent} from "./utils";
+import {getUniqueDays, renderComponent, RenderPosition} from "./utils";
 import {generateDays} from "./mocks/days";
 
-const DAYS_COUNT = 10;
-const daysData = generateDays(DAYS_COUNT);
-
-const sortedDaysData = daysData.slice().sort((a, b) => a.date.getTime() - b.date.getTime());
-const uniqueDays = getUniqueDays(sortedDaysData);
+const DAYS_COUNT = 5;
 
 const siteHeaderElement = document.querySelector(`.page-header`);
 const siteMainElement = document.querySelector(`.page-main`);
@@ -20,10 +18,45 @@ const routeElement = siteHeaderElement.querySelector(`.trip-info`);
 const controlElement = siteHeaderElement.querySelector(`.trip-controls`);
 const contentElement = siteMainElement.querySelector(`.trip-events`);
 
-renderComponent(routeElement, createTripInfoTemplate(uniqueDays));
-renderComponent(controlElement, createMenuTemplate());
-renderComponent(controlElement, createFilterTemplate());
+const renderTripDay = (eventDate, events) => {
+  const tripDay = new TripDayComponent(eventDate);
+  const eventListElement = tripDay.getElement().querySelector(`.trip-events__list`);
 
-renderComponent(contentElement, createSortTemplate());
-renderComponent(contentElement, createEditTemplate(uniqueDays[0].events[0]));
-renderComponent(contentElement, createTripDaysContainerTemplate(uniqueDays.slice(1)));
+  events.forEach((event) => {
+    const eventComponent = new TripEventComponent(event);
+    const eventEditComponent = new TripEventEditComponent(event);
+    const editButton = eventComponent.getElement().querySelector(`.event__rollup-btn`);
+    const eventForm = eventEditComponent.getElement();
+
+    editButton.addEventListener(`click`, function () {
+      eventListElement.replaceChild(eventEditComponent.getElement(), eventComponent.getElement());
+    });
+
+    eventForm.addEventListener(`submit`, function () {
+      eventListElement.replaceChild(eventComponent.getElement(), eventEditComponent.getElement());
+    });
+
+    renderComponent(eventListElement, eventComponent.getElement(), RenderPosition.BEFOREEND);
+  });
+
+  return tripDay.getElement();
+};
+
+const daysData = generateDays(DAYS_COUNT);
+
+const sortedDaysData = daysData.slice().sort((a, b) => a.date.getTime() - b.date.getTime());
+const uniqueDays = getUniqueDays(sortedDaysData);
+
+renderComponent(routeElement, new TripInfoComponent(uniqueDays).getElement(), RenderPosition.BEFOREEND);
+renderComponent(controlElement, new MenuComponent().getElement(), RenderPosition.BEFOREEND);
+renderComponent(controlElement, new FilterComponent().getElement(), RenderPosition.BEFOREEND);
+renderComponent(contentElement, new SortComponent().getElement(), RenderPosition.BEFOREEND);
+
+const boardComponent = new TripBoardComponent();
+renderComponent(contentElement, boardComponent.getElement(), RenderPosition.BEFOREEND);
+
+uniqueDays.forEach((day) => {
+  const tripDay = renderTripDay(day.date, day.events);
+  renderComponent(contentElement, tripDay, RenderPosition.BEFOREEND);
+});
+

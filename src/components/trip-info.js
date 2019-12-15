@@ -1,22 +1,33 @@
 import {monthNames} from "../const";
+import {createElement} from "../utils";
 
 const getTripDuration = (events) => {
   const dateStart = events[0].dateStart;
   const dateEnd = events[events.length - 1].dateEnd;
 
-  return `${monthNames[dateStart.getMonth()]} ${dateStart.getDate()} &mdash; ${dateEnd.getDate()}`;
+  return dateStart.getMonth() === dateEnd.getMonth()
+    ? `${monthNames[dateStart.getMonth()]} ${dateStart.getDate()} &mdash; ${dateEnd.getDate()}`
+    : `${monthNames[dateStart.getMonth()]} ${dateStart.getDate()} &mdash; ${monthNames[dateEnd.getMonth()]} ${dateEnd.getDate()}`;
 };
 
 const getTotalTripPrice = (events) => {
   return events.reduce((accum, currentValue) => accum + currentValue.price, 0);
 };
 
+const getRoute = (events) => {
+  const cities = events.map((item) => item.city);
+
+  return cities.length > 3
+    ? `${cities[0]} &mdash; &hellip; &mdash; ${cities[cities.length - 1]}`
+    : cities.join(` &mdash; `);
+};
+
 const createTripInfoTemplate = (daysData) => {
   const events = daysData.map((item) => item.events).flat();
 
-  const title = events.map((item) => item.city).join(` &mdash; `);
   const duration = getTripDuration(events);
   const total = getTotalTripPrice(events);
+  const title = getRoute(events);
 
   return (
     `<div class="trip-info__main">
@@ -29,4 +40,26 @@ const createTripInfoTemplate = (daysData) => {
   );
 };
 
-export {createTripInfoTemplate};
+
+export default class TripInfo {
+  constructor(days) {
+    this._days = days;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTripInfoTemplate(this._days);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
