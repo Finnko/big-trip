@@ -73,7 +73,7 @@ renderComponent(contentElement, boardComponent.getElement(), RenderPosition.BEFO
 
 const renderDaysEvents = (days) => {
   if (days.length) {
-    renderComponent(routeElement, new TripInfoComponent(uniqueDays).getElement(), RenderPosition.BEFOREEND);
+    renderComponent(routeElement, new TripInfoComponent(days).getElement(), RenderPosition.BEFOREEND);
 
     days.forEach((day) => {
       const tripDay = renderTripDay(day.date, day.events);
