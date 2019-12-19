@@ -1,8 +1,3 @@
-const RenderPosition = {
-  AFTERBEGIN: `afterbegin`,
-  BEFOREEND: `beforeend`
-};
-
 const getRandomInRange = function (min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
@@ -79,29 +74,11 @@ const formatTime = (date) => {
   return `${hours}:${minutes}`;
 };
 
-const renderComponent = (container, element, place) => {
-  switch (place) {
-    case RenderPosition.AFTERBEGIN:
-      container.prepend(element);
-      break;
-    case RenderPosition.BEFOREEND:
-      container.append(element);
-      break;
-  }
-};
-
-const createElement = (template) => {
-  const newElement = document.createElement(`div`);
-  newElement.innerHTML = template;
-
-  return newElement.firstChild;
-};
-
 const repeat = (count, fn) => {
   return Array(count).fill(``).map(fn);
 };
 
 export {
-  RenderPosition, getRandomInRange, getRandomArrayItem, getRandomDate, formatTime, repeat, renderComponent,
-  timeTagFormatted, castDateFormat, castTimeFormat, getRandomTime, getUniqueDays, createElement
+  getRandomInRange, getRandomArrayItem, getRandomDate, formatTime, repeat,
+  timeTagFormatted, castDateFormat, castTimeFormat, getRandomTime, getUniqueDays,
 };

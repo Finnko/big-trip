@@ -1,5 +1,5 @@
 import {monthNames} from "../const";
-import {timeTagFormatted} from "../utils";
+import {timeTagFormatted} from "../utils/common";
 import AbstractComponent from "./abstract-component";
 
 const YEAR_OFFSET = 2;

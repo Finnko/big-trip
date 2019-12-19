@@ -1,5 +1,5 @@
 import {eventOptions, eventTypes} from "../const";
-import {formatTime, castTimeFormat} from "../utils";
+import {formatTime, castTimeFormat} from "../utils/common";
 import AbstractComponent from "./abstract-component";
 
 const YEAR_OFFSET = 2;

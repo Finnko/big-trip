@@ -8,7 +8,8 @@ import TripEventComponent from "./components/trip-event";
 import TripEventEditComponent from "./components/trip-form";
 import NoEventsComponent from "./components/no-events";
 
-import {getUniqueDays, renderComponent, RenderPosition} from "./utils";
+import {renderComponent, RenderPosition} from "./utils/render";
+import {getUniqueDays} from "./utils/common";
 import {generateDays} from "./mocks/days";
 
 const DAYS_COUNT = 5;

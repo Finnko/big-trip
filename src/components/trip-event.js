@@ -1,4 +1,4 @@
-import {castDateFormat, timeTagFormatted, formatTime} from "../utils";
+import {castDateFormat, timeTagFormatted, formatTime} from "../utils/common";
 import AbstractComponent from "./abstract-component";
 
 const createOffersMarkup = (offers) => {
