@@ -86,4 +86,8 @@ export default class TripEvent extends AbstractComponent {
   getTemplate() {
     return createTripEventTemplate(this._event);
   }
+
+  setEditButtonHandler(handler) {
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, handler);
+  }
 }

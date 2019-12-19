@@ -19,9 +19,6 @@ const createTripDayTemplate = (eventDate) => {
         <span class="day__counter">${day}</span>
         <time class="day__date" datetime="${timeTagDateFormat}">${month} ${year}</time>
       </div>
-      <ul class="trip-events__list">
-
-      </ul>
      </li>`
   );
 };
