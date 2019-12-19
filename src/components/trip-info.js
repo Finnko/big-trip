@@ -1,5 +1,5 @@
 import {monthNames} from "../const";
-import {createElement} from "../utils";
+import AbstractComponent from "./abstract-component";
 
 const getTripDuration = (events) => {
   const dateStart = events[0].dateStart;
@@ -40,26 +40,14 @@ const createTripInfoTemplate = (daysData) => {
   );
 };
 
-
-export default class TripInfo {
+export default class TripInfo extends AbstractComponent {
   constructor(days) {
+    super();
+
     this._days = days;
-    this._element = null;
   }
 
   getTemplate() {
     return createTripInfoTemplate(this._days);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
