@@ -6,6 +6,7 @@ import NoEventsComponent from "../components/no-events";
 import TripEventsListComponent from "../components/trip-events";
 import TripDaysComponent from "../components/trip-days";
 import {renderComponent, replaceComponent, RenderPosition} from "../utils/render";
+import TripInfoComponent from "../components/trip-info";
 
 const renderTripDay = (eventDate, events) => {
   const tripDay = new TripDayComponent(eventDate);
@@ -49,7 +50,12 @@ const renderTripDay = (eventDate, events) => {
   return tripDay;
 };
 
-export default class BoardController {
+const renderTripInfo = (days) => {
+  const routeElement = document.querySelector(`.trip-info`);
+  return renderComponent(routeElement, new TripInfoComponent(days), RenderPosition.BEFOREEND);
+};
+
+export default class TripController {
   constructor(container) {
     this._container = container;
 
@@ -64,13 +70,14 @@ export default class BoardController {
     if (days.length) {
       renderComponent(container, this._sortComponent, RenderPosition.BEFOREEND);
       renderComponent(container, this._daysListComponent, RenderPosition.BEFOREEND);
+      renderTripInfo(days);
 
       days.forEach((day) => {
         const tripDay = renderTripDay(day.date, day.events);
         renderComponent(container, tripDay, RenderPosition.BEFOREEND);
       });
     } else {
-      renderComponent(container, new NoEventsComponent(), RenderPosition.BEFOREEND);
+      renderComponent(container, this._noTasksComponent, RenderPosition.BEFOREEND);
     }
   }
 }
