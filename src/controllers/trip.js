@@ -92,7 +92,6 @@ export default class TripController {
     renderDays(days, daysListElement);
 
     this._sortComponent.setSortTypeChangeHandler((sortType) => {
-      //debugger;
       const events = days.flatMap((day) => day.events);
       let sortedEvents = [];
 
