@@ -22,20 +22,20 @@ const generateImagesMarkup = (images) => {
 
 const generateAllTypesMarkup = (allTypes, currentType) => {
   return allTypes.map((type) => {
-    const isChecked = allTypes.find((chosenType) => chosenType === currentType);
+    const isChecked = allTypes.find((chosenType) => chosenType.type === currentType);
 
     return (
       `<div class="event__type-item">
          <input
-           id="event-type-${type}-1"
+           id="event-type-${type.type}-1"
            class="event__type-input  visually-hidden"
            type="radio"
            name="event-type"
-           value="${type}"
+           value="${type.type}"
            ${isChecked ? `checked` : ``}
          >
-         <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">
-          ${type}
+         <label class="event__type-label  event__type-label--${type.type}" for="event-type-${type.type}-1">
+          ${type.type}
          </label>
        </div>`
     );

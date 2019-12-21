@@ -19,6 +19,8 @@ const daysData = generateDays(DAYS_COUNT);
 const sortedDaysData = daysData.slice().sort((a, b) => a.date.getTime() - b.date.getTime());
 const uniqueDays = getUniqueDays(sortedDaysData);
 
+console.log(uniqueDays);
+
 renderComponent(controlElement, new MenuComponent(), RenderPosition.BEFOREEND);
 renderComponent(controlElement, new FilterComponent(), RenderPosition.BEFOREEND);
 
