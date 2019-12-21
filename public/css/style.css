@@ -173,6 +173,11 @@ main {
 .trip-info__main {
   width: 600px; }
 
+.trip-info__wrap {
+  display: flex;
+  align-items: center;
+}
+
 .trip-info__title {
   margin: 0;
   margin-bottom: 4px;

@@ -1,4 +1,4 @@
-import {getRandomDate, getRandomTime, repeat, getRandomInRange} from "../utils";
+import {getRandomDate, getRandomTime, repeat, getRandomInRange} from "../utils/common";
 import {generateEvent} from "./event";
 
 const EVENTS_MIN = 1;

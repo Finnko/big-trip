@@ -1,5 +1,5 @@
 import {monthNames} from "../const";
-import {createElement} from "../utils";
+import AbstractComponent from "./abstract-component";
 
 const getTripDuration = (events) => {
   const dateStart = events[0].dateStart;
@@ -30,36 +30,26 @@ const createTripInfoTemplate = (daysData) => {
   const title = getRoute(events);
 
   return (
-    `<div class="trip-info__main">
+    `<div class="trip-info__wrap">
+      <div class="trip-info__main">
          <h1 class="trip-info__title">${title}</h1>
          <p class="trip-info__dates">${duration}</p>
-     </div>
-     <p class="trip-info__cost">
-      Total: &euro;&nbsp;<span class="trip-info__cost-value">${total}</span>
-    </p>`
+      </div>
+      <p class="trip-info__cost">
+        Total: &euro;&nbsp;<span class="trip-info__cost-value">${total}</span>
+      </p>
+    </div>`
   );
 };
 
-
-export default class TripInfo {
+export default class TripInfo extends AbstractComponent {
   constructor(days) {
+    super();
+
     this._days = days;
-    this._element = null;
   }
 
   getTemplate() {
     return createTripInfoTemplate(this._days);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
