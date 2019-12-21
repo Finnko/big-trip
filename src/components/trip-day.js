@@ -6,10 +6,16 @@ const YEAR_OFFSET = 2;
 const TIME_TAG_OFFSET = -6;
 
 const createTripDayTemplate = (eventDate) => {
-  const date = new Date(eventDate);
-  const day = date.getDate();
-  const month = monthNames[date.getMonth()];
-  const year = date.getFullYear().toString().slice(YEAR_OFFSET);
+  let date = new Date(eventDate);
+  let day = date.getDate();
+  let month = monthNames[date.getMonth()];
+  let year = date.getFullYear().toString().slice(YEAR_OFFSET);
+
+  if (eventDate === 0) {
+    day = ``;
+    month = ``;
+    year = ``;
+  }
 
   const timeTagDateFormat = timeTagFormatted(date).slice(0, TIME_TAG_OFFSET);
 

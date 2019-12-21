@@ -8,6 +8,8 @@ import TripDaysComponent from "../components/trip-days";
 import {renderComponent, replaceComponent, RenderPosition} from "../utils/render";
 import TripInfoComponent from "../components/trip-info";
 
+const EMPTY_DATE = 0;
+
 const renderTripDay = (eventDate, events) => {
   const tripDay = new TripDayComponent(eventDate);
   const tripDayContainer = tripDay.getElement();
@@ -98,14 +100,19 @@ export default class TripController {
         case SortType.PRICE:
           sortedEvents = events.slice().sort((a, b) => b.price - a.price);
           break;
+        case SortType.TIME:
+          sortedEvents = events.slice().sort((a, b) => b.price - a.price);
+          break;
         case SortType.DEFAULT:
           sortedEvents = [];
           break;
       }
 
       daysListElement.innerHTML = ``;
+
       if (sortedEvents.length) {
-        renderEvents(sortedEvents, daysListElement);
+        const dayWithSortedEvents = renderTripDay(EMPTY_DATE, sortedEvents);
+        renderComponent(daysListElement, dayWithSortedEvents, RenderPosition.BEFOREEND);
         return;
       }
 
