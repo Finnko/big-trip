@@ -41,6 +41,43 @@ const monthNames = [
   `Dec`,
 ];
 
-const eventTypes = [`taxi`, `bus`, `train`, `ship`, `drive`, `flight`, `check-in`, `sightseeing`, `restaurant`];
+const eventTypes = [
+  {
+    type: `taxi`,
+    kind: `action`
+  },
+  {
+    type: `bus`,
+    kind: `action`
+  },
+  {
+    type: `train`,
+    kind: `action`
+  },
+  {
+    type: `ship`,
+    kind: `action`
+  },
+  {
+    type: `drive`,
+    kind: `action`
+  },
+  {
+    type: `flight`,
+    kind: `action`
+  },
+  {
+    type: `check-in`,
+    kind: `place`
+  },
+  {
+    type: `sightseeing`,
+    kind: `place`
+  },
+  {
+    type: `restaurant`,
+    kind: `place`
+  }
+];
 
 export {eventOptions, eventTypes, monthNames};

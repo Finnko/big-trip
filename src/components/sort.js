@@ -1,5 +1,11 @@
 import AbstractComponent from "./abstract-component";
 
+const SortType = {
+  TIME: `time`,
+  PRICE: `price`,
+  DEFAULT: `event`,
+};
+
 const createSortTemplate = () => {
   return (
     `<div class="trip-events__sort-wrap">
@@ -39,3 +45,6 @@ export default class Sort extends AbstractComponent {
     return createSortTemplate();
   }
 }
+
+export {SortType};
+
