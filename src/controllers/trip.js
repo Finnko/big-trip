@@ -101,7 +101,9 @@ export default class TripController {
           sortedEvents = events.slice().sort((a, b) => b.price - a.price);
           break;
         case SortType.TIME:
-          sortedEvents = events.slice().sort((a, b) => b.price - a.price);
+          sortedEvents = events.slice().sort((a, b) =>
+            Math.abs(b.dateStart.getTime() - b.dateEnd.getTime()) -
+            Math.abs(a.dateStart.getTime() - a.dateEnd.getTime()));
           break;
         case SortType.DEFAULT:
           sortedEvents = [];
@@ -111,8 +113,8 @@ export default class TripController {
       daysListElement.innerHTML = ``;
 
       if (sortedEvents.length) {
-        const dayWithSortedEvents = renderTripDay(EMPTY_DATE, sortedEvents);
-        renderComponent(daysListElement, dayWithSortedEvents, RenderPosition.BEFOREEND);
+        const emptyDayWithSortedEvents = renderTripDay(EMPTY_DATE, sortedEvents);
+        renderComponent(daysListElement, emptyDayWithSortedEvents, RenderPosition.BEFOREEND);
         return;
       }
 
