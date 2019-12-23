@@ -1,4 +1,5 @@
 import {getFilterItems} from "../mocks/filter";
+import {createElement} from "../utils";
 
 const createFilterMarkup = (filters) => {
   return filters.map((filter) => {
@@ -12,7 +13,6 @@ const createFilterMarkup = (filters) => {
   }).join(`\n`);
 };
 
-
 const createFilterTemplate = () => {
   const filterItems = createFilterMarkup(getFilterItems());
 
@@ -24,4 +24,24 @@ const createFilterTemplate = () => {
   );
 };
 
-export {createFilterTemplate};
+export default class Filter {
+  constructor() {
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createFilterTemplate();
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

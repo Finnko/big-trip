@@ -1,4 +1,4 @@
-import {castDateFormat, timeTagFormatted, formatTime} from "../utils";
+import {castDateFormat, timeTagFormatted, formatTime, createElement} from "../utils";
 
 const createOffersMarkup = (offers) => {
   return offers.map((offer) => {
@@ -45,8 +45,8 @@ const createTripEventTemplate = (event) => {
 
   const duration = getEventTimeDuration(dateStart, dateEnd);
 
-  return (`
-    <li class="trip-events__item">
+  return (
+    `<li class="trip-events__item">
       <div class="event">
         <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
@@ -71,8 +71,30 @@ const createTripEventTemplate = (event) => {
           <span class="visually-hidden">Open event</span>
         </button>
       </div>
-    </li>
-  `);
+    </li>`
+  );
 };
 
-export {createTripEventTemplate};
+
+export default class TripEvent {
+  constructor(event) {
+    this._event = event;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTripEventTemplate(this._event);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

@@ -1,5 +1,5 @@
 import {eventOptions, eventTypes} from "../const";
-import {formatTime, castTimeFormat} from "../utils";
+import {formatTime, castTimeFormat, createElement} from "../utils";
 
 const YEAR_OFFSET = 2;
 
@@ -65,7 +65,7 @@ const generateAllOffersMarkup = (allOffers, chosenOffers) => {
   }).join(`\n`);
 };
 
-const createEditTemplate = (event) => {
+const createEditEventTemplate = (event) => {
   const {type, description, photos, dateStart, dateEnd, options} = event;
 
   const timeStartFormatted = castDateTimeFormat(dateStart);
@@ -74,8 +74,8 @@ const createEditTemplate = (event) => {
   const types = generateAllTypesMarkup(eventTypes, type);
   const offers = generateAllOffersMarkup(eventOptions, options);
 
-  return (`
-    <form class="trip-events__item  event  event--edit" action="#" method="post">
+  return (
+    `<form class="trip-events__item  event  event--edit" action="#" method="post">
       <header class="event__header">
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-1">
@@ -158,8 +158,29 @@ const createEditTemplate = (event) => {
           </div>
         </section>
       </section>
-    </form>
-  `);
+    </form>`
+  );
 };
 
-export {createEditTemplate};
+export default class TripEdit {
+  constructor(event) {
+    this._event = event;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createEditEventTemplate(this._event);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
