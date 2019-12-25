@@ -1,10 +1,10 @@
 import AbstractComponent from "./abstract-component";
 
 const createBoardTemplate = () => {
-  return (`<section class="trip-events"></section>`);
+  return (`<ul class="trip-days"></ul>`);
 };
 
-export default class TripBoard extends AbstractComponent {
+export default class TripDays extends AbstractComponent {
   getTemplate() {
     return createBoardTemplate();
   }

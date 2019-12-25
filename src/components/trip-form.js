@@ -1,5 +1,6 @@
 import {eventOptions, eventTypes} from "../const";
-import {formatTime, castTimeFormat, createElement} from "../utils";
+import {formatTime, castTimeFormat} from "../utils/common";
+import AbstractComponent from "./abstract-component";
 
 const YEAR_OFFSET = 2;
 
@@ -162,25 +163,18 @@ const createEditEventTemplate = (event) => {
   );
 };
 
-export default class TripEdit {
+export default class TripEdit extends AbstractComponent {
   constructor(event) {
+    super();
+
     this._event = event;
-    this._element = null;
   }
 
   getTemplate() {
     return createEditEventTemplate(this._event);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
+  setFormSubmitHandler(handler) {
+    this.getElement().addEventListener(`submit`, handler);
   }
 }

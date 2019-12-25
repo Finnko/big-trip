@@ -1,4 +1,4 @@
-import {getRandomInRange, getRandomArrayItem, repeat} from "../utils";
+import {getRandomInRange, getRandomArrayItem, repeat} from "../utils/common";
 import {eventOptions, eventTypes} from "../const";
 
 const PHOTOS_MIN_PER_CARD = 3;

@@ -1,5 +1,6 @@
 import {monthNames} from "../const";
-import {createElement, timeTagFormatted} from "../utils";
+import {timeTagFormatted} from "../utils/common";
+import AbstractComponent from "./abstract-component";
 
 const YEAR_OFFSET = 2;
 const TIME_TAG_OFFSET = -6;
@@ -12,47 +13,24 @@ const createTripDayTemplate = (eventDate) => {
 
   const timeTagDateFormat = timeTagFormatted(date).slice(0, TIME_TAG_OFFSET);
 
-  // const eventsMarkup = events.map((event) => createTripEventTemplate(event)).join(`\n`);
-
   return (
     `<li class="trip-days__item  day">
       <div class="day__info">
         <span class="day__counter">${day}</span>
         <time class="day__date" datetime="${timeTagDateFormat}">${month} ${year}</time>
       </div>
-      <ul class="trip-events__list">
-
-      </ul>
      </li>`
   );
 };
 
-// const generateDaysMarkup = (days) => {
-//   return days.map((day) => {
-//     return createTripDayTemplate(day.date, day.events);
-//   }).join(`\n`);
-// };
-
-
-export default class TripDay {
+export default class TripDay extends AbstractComponent {
   constructor(date) {
+    super();
+
     this._date = date;
-    this._element = null;
   }
 
   getTemplate() {
     return createTripDayTemplate(this._date);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
