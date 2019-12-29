@@ -1,6 +1,6 @@
+import AbstractSmartComponent from "./abstract-smart-component";
 import {eventOptions, eventTypes} from "../const";
 import {formatTime, castTimeFormat} from "../utils/common";
-import AbstractComponent from "./abstract-component";
 
 const YEAR_OFFSET = 2;
 
@@ -12,7 +12,25 @@ const castDateTimeFormat = (date) => {
   return `${day}/${month}/${year} ${formatTime(date)}`;
 };
 
-const generateImagesMarkup = (images) => {
+const createFavoriteButtonMarkup = (isActive) => {
+  return (
+    `<input
+       id="event-favorite-1"
+       class="event__favorite-checkbox  visually-hidden"
+       type="checkbox"
+       name="event-favorite"
+       ${isActive ? `checked` : ``}
+    >
+    <label class="event__favorite-btn" for="event-favorite-1">
+    <span class="visually-hidden">Add to favorite</span>
+    <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
+      <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
+    </svg>
+    </label>`
+  );
+};
+
+const createImagesMarkup = (images) => {
   return images.map((image) => {
     return (
       `<img class="event__photo" src="${image}" alt="Event photo">`
@@ -20,7 +38,7 @@ const generateImagesMarkup = (images) => {
   }).join(`\n`);
 };
 
-const generateAllTypesMarkup = (allTypes, currentType) => {
+const createAllTypesMarkup = (allTypes, currentType) => {
   return allTypes.map((type) => {
     const isChecked = allTypes.find((chosenType) => chosenType.type === currentType);
 
@@ -42,7 +60,7 @@ const generateAllTypesMarkup = (allTypes, currentType) => {
   }).join(`\n`);
 };
 
-const generateAllOffersMarkup = (allOffers, chosenOffers) => {
+const createAllOffersMarkup = (allOffers, chosenOffers) => {
   return allOffers.map((offer) => {
     const {name, type, price} = offer;
     const isChecked = Array.from(chosenOffers).some((chosenOffer) => chosenOffer.type === type);
@@ -71,9 +89,11 @@ const createEditEventTemplate = (event) => {
 
   const timeStartFormatted = castDateTimeFormat(dateStart);
   const timeEndFormatted = castDateTimeFormat(dateEnd);
-  const images = generateImagesMarkup(photos);
-  const types = generateAllTypesMarkup(eventTypes, type);
-  const offers = generateAllOffersMarkup(eventOptions, options);
+  const images = createImagesMarkup(photos);
+  const types = createAllTypesMarkup(eventTypes, type);
+  const offers = createAllOffersMarkup(eventOptions, options);
+
+  const favoritesButton = createFavoriteButtonMarkup(event.isFavorite);
 
   return (
     `<form class="trip-events__item  event  event--edit" action="#" method="post">
@@ -138,14 +158,7 @@ const createEditEventTemplate = (event) => {
         </div>
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
         <button class="event__reset-btn" type="reset">Cancel</button>
-        <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" checked>
-        <label class="event__favorite-btn" for="event-favorite-1">
-          <span class="visually-hidden">Add to favorite</span>
-          <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
-            <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
-          </svg>
-        </label>
-
+        ${favoritesButton}
         <button class="event__rollup-btn" type="button">
           <span class="visually-hidden">Open event</span>
         </button>
@@ -174,18 +187,53 @@ const createEditEventTemplate = (event) => {
   );
 };
 
-export default class TripEdit extends AbstractComponent {
+export default class TripEdit extends AbstractSmartComponent {
   constructor(event) {
     super();
 
     this._event = event;
+    this._submitHandler = null;
+
+    this._subscribeOnEvents();
   }
 
   getTemplate() {
     return createEditEventTemplate(this._event);
   }
 
+  setFavoriteButtonHandler(handler) {
+    this.getElement().querySelector(`.event__favorite-btn`).addEventListener(`click`, handler);
+  }
+
   setFormSubmitHandler(handler) {
     this.getElement().addEventListener(`submit`, handler);
+
+    this._submitHandler = handler;
+  }
+
+  recoveryListeners() {
+    this.setFormSubmitHandler(this._submitHandler);
+    this._subscribeOnEvents();
+  }
+
+  rerender() {
+    super.rerender();
+  }
+
+  reset() {
+    // const event = this._event;
+
+    this.rerender();
+  }
+
+  _subscribeOnEvents() {
+    const element = this.getElement();
+
+    element.querySelector(`.event__favorite-btn`)
+      .addEventListener(`click`, () => {
+        // this._isDateShowing = !this._isDateShowing;
+
+        this.rerender();
+      });
   }
 }
