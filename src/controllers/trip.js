@@ -9,7 +9,7 @@ import PointController from "./point";
 
 const EMPTY_DATE = 0;
 
-const renderTripDay = (eventDate, events, onDataChange, onViewChange) => {
+const renderTripDay = (eventDate, events, onDataChange, onViewChange, pointControllers) => {
   const tripDay = new TripDayComponent(eventDate);
   const tripDayContainer = tripDay.getElement();
   const eventListComponent = new TripEventsListComponent();
@@ -19,6 +19,7 @@ const renderTripDay = (eventDate, events, onDataChange, onViewChange) => {
   events.forEach((event) => {
     const pointController = new PointController(eventContainer, onDataChange, onViewChange);
     pointController.render(event);
+    pointControllers.push(pointController);
   });
 
   return tripDay;
@@ -29,9 +30,10 @@ const renderTripInfo = (days) => {
   return renderComponent(routeElement, new TripInfoComponent(days), RenderPosition.BEFOREEND);
 };
 
-const renderDays = (days, container, onDataChange, onViewChange) => {
+const renderDays = (days, container, onDataChange, onViewChange, pointControllers) => {
   days.forEach((day) => {
-    const tripDay = renderTripDay(day.date, day.events, onDataChange, onViewChange);
+    const tripDay = renderTripDay(day.date, day.events, onDataChange, onViewChange, pointControllers);
+    console.log(pointControllers);
     renderComponent(container, tripDay, RenderPosition.BEFOREEND);
   });
 };
@@ -68,7 +70,7 @@ export default class TripController {
     const daysListElement = this._daysListComponent.getElement();
 
     renderTripInfo(this._days);
-    renderDays(this._days, daysListElement, this._onDataChange, this._onViewChange);
+    renderDays(this._days, daysListElement, this._onDataChange, this._onViewChange, this._pointControllers);
   }
 
   _onDataChange(pointController, oldData, newData) {
@@ -108,11 +110,11 @@ export default class TripController {
     daysListElement.innerHTML = ``;
 
     if (sortedEvents.length) {
-      const emptyDayWithSortedEvents = renderTripDay(EMPTY_DATE, sortedEvents);
+      const emptyDayWithSortedEvents = renderTripDay(EMPTY_DATE, sortedEvents, this._onDataChange, this._onViewChange, this._pointControllers);
       renderComponent(daysListElement, emptyDayWithSortedEvents, RenderPosition.BEFOREEND);
       return;
     }
 
-    renderDays(this._days, daysListElement);
+    renderDays(this._days, daysListElement, this._onDataChange, this._onViewChange, this._pointControllers);
   }
 }
