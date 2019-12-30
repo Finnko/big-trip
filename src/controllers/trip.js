@@ -43,6 +43,7 @@ export default class TripController {
 
     this._days = [];
     this._pointControllers = [];
+    this._events = [];
 
     this._noTasksComponent = new NoEventsComponent();
     this._sortComponent = new SortComponent();
@@ -57,6 +58,7 @@ export default class TripController {
 
   render(days) {
     this._days = days;
+    this._events = this._days.flatMap((day) => day.events);
     const container = this._container.getElement();
 
     if (!this._days.length) {
@@ -73,14 +75,16 @@ export default class TripController {
   }
 
   _onDataChange(pointController, oldData, newData) {
-    const index = this._days.findIndex((item) => item === oldData);
+    this._pointControllers = [];
+    const index = this._events.findIndex((item) => item === oldData);
 
     if (index === -1) {
+      console.log(1);
       return;
     }
 
-    this._days = [].concat(this._days.slice(0, index), newData, this._days.slice(index + 1));
-    pointController.render(this._days[index]);
+    this._events = [].concat(this._events.slice(0, index), newData, this._events.slice(index + 1));
+    pointController.render(this._events[index]);
   }
 
   _onViewChange() {
@@ -88,15 +92,14 @@ export default class TripController {
   }
 
   _onSortTypeChange(sortType) {
-    const events = this._days.flatMap((day) => day.events);
     let sortedEvents = [];
 
     switch (sortType) {
       case SortType.PRICE:
-        sortedEvents = events.slice().sort((a, b) => b.price - a.price);
+        sortedEvents = this._events.slice().sort((a, b) => b.price - a.price);
         break;
       case SortType.TIME:
-        sortedEvents = events.slice().sort((a, b) =>
+        sortedEvents = this._events.slice().sort((a, b) =>
           Math.abs(b.dateStart.getTime() - b.dateEnd.getTime()) -
           Math.abs(a.dateStart.getTime() - a.dateEnd.getTime()));
         break;

@@ -38,6 +38,10 @@ export default class PointController {
       this._replaceFormToEvent();
     });
 
+    this._tripEventEditComponent.setCloseButtonClick(() => {
+      this._replaceFormToEvent();
+    });
+
     this._tripEventEditComponent.setFavoriteButtonHandler(() => {
       this._onDataChange(this, event, Object.assign({}, event, {
         isFavorite: !event.isFavorite,

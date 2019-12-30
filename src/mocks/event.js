@@ -1,5 +1,5 @@
 import {getRandomInRange, getRandomArrayItem, repeat} from "../utils/common";
-import {eventOptions, eventTypes} from "../const";
+import {eventOptions, EventTypes} from "../const";
 
 const PHOTOS_MIN_PER_CARD = 3;
 const PHOTOS_MAX_PER_CARD = 6;
@@ -25,21 +25,12 @@ const generateOption = () => getRandomArrayItem(eventOptions);
 
 
 const generateEvent = (startDate, endDate) => {
-  const eventType = getRandomArrayItem(eventTypes);
+  const eventType = getRandomArrayItem(Math.random() > 0.5 ? EventTypes.TRANSFER : EventTypes.ACTIVITY);
   const city = getRandomArrayItem(cities);
-  let delimiter;
-  switch (eventType.kind) {
-    case (`action`):
-      delimiter = `to`;
-      break;
-    case (`place`):
-      delimiter = `in`;
-      break;
-  }
-  const title = `${eventType.type} ${delimiter} ${city}`;
+  const title = `${eventType} to ${city}`;
 
   return {
-    type: eventType.type,
+    type: eventType,
     title,
     city,
     description: repeat(getRandomInRange(DESC_MIN_NUMBER, DESC_MAX_NUMBER), generatePhrase),
