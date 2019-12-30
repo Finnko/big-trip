@@ -33,7 +33,6 @@ const renderTripInfo = (days) => {
 const renderDays = (days, container, onDataChange, onViewChange, pointControllers) => {
   days.forEach((day) => {
     const tripDay = renderTripDay(day.date, day.events, onDataChange, onViewChange, pointControllers);
-    console.log(pointControllers);
     renderComponent(container, tripDay, RenderPosition.BEFOREEND);
   });
 };
@@ -74,14 +73,14 @@ export default class TripController {
   }
 
   _onDataChange(pointController, oldData, newData) {
-    const index = this._tasks.findIndex((item) => item === oldData);
+    const index = this._days.findIndex((item) => item === oldData);
 
     if (index === -1) {
       return;
     }
 
-    this._tasks = [].concat(this._tasks.slice(0, index), newData, this._tasks.slice(index + 1));
-    pointController.render(this._tasks[index]);
+    this._days = [].concat(this._days.slice(0, index), newData, this._days.slice(index + 1));
+    pointController.render(this._days[index]);
   }
 
   _onViewChange() {
@@ -115,6 +114,7 @@ export default class TripController {
       return;
     }
 
+    this._pointControllers = [];
     renderDays(this._days, daysListElement, this._onDataChange, this._onViewChange, this._pointControllers);
   }
 }
