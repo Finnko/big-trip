@@ -3,18 +3,15 @@ import FilterComponent from "./components/filter";
 import TripBoardComponent from "./components/trip-board";
 
 import {renderComponent, RenderPosition} from "./utils/render";
+import {daysData} from "./mocks/days";
 import {getUniqueDays} from "./utils/common";
-import {generateDays} from "./mocks/days";
-import TripController from "./controllers/trip";
 
-const DAYS_COUNT = 5;
+import TripController from "./controllers/trip";
 
 const siteHeaderElement = document.querySelector(`.page-header`);
 const siteMainElement = document.querySelector(`.page-main`);
 const controlElement = siteHeaderElement.querySelector(`.trip-controls`);
 const contentElement = siteMainElement.querySelector(`.page-body__container`);
-
-const daysData = generateDays(DAYS_COUNT);
 
 const sortedDaysData = daysData.slice().sort((a, b) => a.date.getTime() - b.date.getTime());
 const uniqueDays = getUniqueDays(sortedDaysData);

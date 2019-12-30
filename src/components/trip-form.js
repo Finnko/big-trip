@@ -1,5 +1,6 @@
 import AbstractSmartComponent from "./abstract-smart-component";
 import {eventOptions, EventTypes} from "../const";
+import {destinations} from "../mocks/days";
 import {formatTime, castTimeFormat} from "../utils/common";
 
 const YEAR_OFFSET = 2;
@@ -78,6 +79,12 @@ const createOffersMarkup = (allOffers, chosenOffers) => {
   }).join(`\n`);
 };
 
+const createDestinationsMarkup = () => {
+  return [...destinations].map((item) => {
+    return `<option value="${item}"></option>`;
+  }).join(`\n`);
+};
+
 const createEditEventTemplate = (event) => {
   const {type, description, photos, dateStart, dateEnd, options, isFavorite, price} = event;
 
@@ -86,6 +93,7 @@ const createEditEventTemplate = (event) => {
   const images = createImagesMarkup(photos);
   const types = createTypesMarkup(EventTypes, type);
   const offers = createOffersMarkup(eventOptions, options);
+  const destinationOptions = createDestinationsMarkup();
 
   return (
     `<form class="trip-events__item  event  event--edit" action="#" method="post">
@@ -106,10 +114,7 @@ const createEditEventTemplate = (event) => {
           </label>
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="" list="destination-list-1">
           <datalist id="destination-list-1">
-            <option value="Amsterdam"></option>
-            <option value="Geneva"></option>
-            <option value="Chamonix"></option>
-            <option value="Saint Petersburg"></option>
+            ${destinationOptions}
           </datalist>
         </div>
         <div class="event__field-group  event__field-group--time">
@@ -179,6 +184,8 @@ export default class TripEdit extends AbstractSmartComponent {
 
     this._event = event;
     this._submitHandler = null;
+    // this._closeButtonClickHandler = null;
+    // this._favoriteButtonHandler = null;
 
     this._subscribeOnEvents();
   }
@@ -204,6 +211,8 @@ export default class TripEdit extends AbstractSmartComponent {
 
   recoveryListeners() {
     this.setFormSubmitHandler(this._submitHandler);
+    // this.setCloseButtonClick(this._closeButtonClickHandler);
+    // this.setFavoriteButtonHandler(this._favoriteButtonHandler);
     this._subscribeOnEvents();
   }
 
@@ -218,11 +227,12 @@ export default class TripEdit extends AbstractSmartComponent {
   _subscribeOnEvents() {
     const element = this.getElement();
 
-    // element.querySelector(`.event__favorite-btn`)
-    //   .addEventListener(`click`, () => {
-    //     // this._isDateShowing = !this._isDateShowing;
-    //
-    //     this.rerender();
-    //   });
+    element.querySelector(`.event__type-list`)
+      .addEventListener(`click`, (evt) => {
+        if (evt.target.tagName === `INPUT`) {
+          this._event.type = evt.target.value;
+          this.rerender();
+        }
+      });
   }
 }
