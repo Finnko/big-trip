@@ -1,12 +1,13 @@
-import {getRandomInRange, getRandomArrayItem, repeat} from "../utils/common";
+import {getRandomInRange, getRandomArrayItem, repeat, getRandomDate} from "../utils/common";
 import {eventOptions, EventTypes} from "../const";
+
+const EVENTS_COUNT = 10;
 
 const PHOTOS_MIN_PER_CARD = 3;
 const PHOTOS_MAX_PER_CARD = 6;
 
 const PRICE_MAX = 1250;
 const PRICE_MIN = 100;
-
 const OFFERS_MIN_NUMBER = 0;
 const OFFERS_MAX_NUMBER = 2;
 
@@ -24,10 +25,25 @@ const generatePhrase = () => getRandomArrayItem(defaultDescription);
 const generateOption = () => getRandomArrayItem(eventOptions);
 
 
-const generateEvent = (startDate, endDate) => {
+const generateEvent = () => {
   const eventType = getRandomArrayItem(Math.random() > 0.5 ? EventTypes.TRANSFER : EventTypes.ACTIVITY);
   const city = getRandomArrayItem(cities);
-  const title = `${eventType} to ${city}`;
+  let delimiter = ``;
+
+  if (EventTypes.TRANSFER.includes(eventType)) {
+    delimiter = `to`;
+  } else {
+    delimiter = `in`;
+  }
+
+  const title = `${eventType} ${delimiter} ${city}`;
+
+  let startDate = getRandomDate();
+  let endDate = getRandomDate();
+
+  if (startDate.getTime() > endDate.getTime()) {
+    [startDate, endDate] = [endDate, startDate];
+  }
 
   return {
     type: eventType,
@@ -43,4 +59,8 @@ const generateEvent = (startDate, endDate) => {
   };
 };
 
-export {generateEvent};
+const eventsData = repeat(EVENTS_COUNT, generateEvent).sort((a, b) => a.dateStart - b.dateStart);
+
+const destinations = new Set(eventsData.map(({city}) => city));
+
+export {eventsData, destinations};

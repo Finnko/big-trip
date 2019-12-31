@@ -1,6 +1,6 @@
 import AbstractSmartComponent from "./abstract-smart-component";
 import {eventOptions, EventTypes} from "../const";
-import {destinations} from "../mocks/days";
+import {destinations} from "../mocks/event";
 import {formatTime, castTimeFormat} from "../utils/common";
 
 const YEAR_OFFSET = 2;

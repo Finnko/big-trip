@@ -1,7 +1,6 @@
 import TripDayComponent from "../components/trip-day";
 import SortComponent, {SortType} from "../components/sort";
 import NoEventsComponent from "../components/no-events";
-import TripEventsListComponent from "../components/trip-events";
 import TripDaysComponent from "../components/trip-days";
 import {renderComponent, RenderPosition} from "../utils/render";
 import TripInfoComponent from "../components/trip-info";
@@ -30,22 +29,38 @@ const renderTripInfo = (days) => {
   return renderComponent(routeElement, new TripInfoComponent(days), RenderPosition.BEFOREEND);
 };
 
-const renderDays = (days, container, onDataChange, onViewChange, pointControllers) => {
-  days.forEach((day) => {
-    const tripDay = renderTripDay(day.date, day.events, onDataChange, onViewChange, pointControllers);
-    renderComponent(container, tripDay, RenderPosition.BEFOREEND);
+const renderEvents = (events, container, onDataChange, onViewChange) => {
+  const pointControllers = [];
+  const dates = Array.from(new Set(events.map((item) => new Date(item.dateStart).toDateString())));
+
+  dates.forEach((date, dateIndex) => {
+    const dayComponent = new TripDayComponent(date, dateIndex + 1);
+    const eventsListContainer = dayComponent.getElement().querySelector(`.trip-events__list`);
+
+    events
+      .filter((item) => {
+        return new Date(item.dateStart).toDateString() === date;
+      })
+      .forEach((item) => {
+        const pointController = new PointController(eventsListContainer, onDataChange, onViewChange);
+        pointController.render(item);
+        pointControllers.push(pointController);
+      });
+
+    renderComponent(container, dayComponent, RenderPosition.BEFOREEND);
   });
+
+  return pointControllers;
 };
 
 export default class TripController {
   constructor(container) {
     this._container = container;
 
-    this._days = [];
-    this._pointControllers = [];
     this._events = [];
+    this._pointControllers = [];
 
-    this._noTasksComponent = new NoEventsComponent();
+    this._noEventsComponent = new NoEventsComponent();
     this._sortComponent = new SortComponent();
     this._daysListComponent = new TripDaysComponent();
 
@@ -56,13 +71,12 @@ export default class TripController {
     this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
   }
 
-  render(days) {
-    this._days = days;
-    this._events = this._days.flatMap((day) => day.events);
+  render(events) {
+    this._events = events;
     const container = this._container.getElement();
 
-    if (!this._days.length) {
-      renderComponent(container, this._noTasksComponent, RenderPosition.BEFOREEND);
+    if (!this._events.length) {
+      renderComponent(container, this._noEventsComponent, RenderPosition.BEFOREEND);
       return;
     }
 
@@ -70,8 +84,8 @@ export default class TripController {
     renderComponent(container, this._daysListComponent, RenderPosition.BEFOREEND);
     const daysListElement = this._daysListComponent.getElement();
 
-    renderTripInfo(this._days);
-    renderDays(this._days, daysListElement, this._onDataChange, this._onViewChange, this._pointControllers);
+    renderTripInfo(this._events);
+    this._pointControllers = renderEvents(this._events, daysListElement, this._onDataChange, this._onViewChange);
   }
 
   _onDataChange(pointController, oldData, newData) {
@@ -115,7 +129,6 @@ export default class TripController {
       return;
     }
 
-    this._pointControllers = [];
     renderDays(this._days, daysListElement, this._onDataChange, this._onViewChange, this._pointControllers);
   }
 }
