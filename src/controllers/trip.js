@@ -8,22 +8,6 @@ import PointController from "./point";
 
 const EMPTY_DATE = 0;
 
-const renderTripDay = (eventDate, events, onDataChange, onViewChange, pointControllers) => {
-  const tripDay = new TripDayComponent(eventDate);
-  const tripDayContainer = tripDay.getElement();
-  const eventListComponent = new TripEventsListComponent();
-  const eventContainer = eventListComponent.getElement();
-  renderComponent(tripDayContainer, eventListComponent, RenderPosition.BEFOREEND);
-
-  events.forEach((event) => {
-    const pointController = new PointController(eventContainer, onDataChange, onViewChange);
-    pointController.render(event);
-    pointControllers.push(pointController);
-  });
-
-  return tripDay;
-};
-
 const renderTripInfo = (days) => {
   const routeElement = document.querySelector(`.trip-info`);
   return renderComponent(routeElement, new TripInfoComponent(days), RenderPosition.BEFOREEND);

@@ -14,8 +14,8 @@ const createOffersMarkup = (offers) => {
 };
 
 const getEventTimeDuration = (dateStart, dateEnd) => {
-  const daysDiff = Math.abs(dateStart.getDate() - dateEnd.getDate());
-  const hoursDiff = Math.abs(dateStart.getHours() - dateEnd.getHours());
+  const daysDiff = Math.floor((dateEnd - dateStart) / (1000 * 60 * 60 * 24));
+  const hoursDiff = Math.floor((dateEnd - dateStart) / (1000 * 60 * 60)) - daysDiff * 24;
   const minutesDiff = Math.abs(dateStart.getMinutes() - dateEnd.getMinutes());
 
   let formattedInterval = daysDiff > 0 ? castDateFormat(daysDiff) : ``;

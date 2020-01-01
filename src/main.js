@@ -16,6 +16,6 @@ renderComponent(controlElement, new FilterComponent(), RenderPosition.BEFOREEND)
 
 const boardComponent = new TripBoardComponent();
 renderComponent(contentElement, boardComponent, RenderPosition.BEFOREEND);
-
+console.log(eventsData);
 const tripController = new TripController(boardComponent);
 tripController.render(eventsData);
