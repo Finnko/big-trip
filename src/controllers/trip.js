@@ -6,24 +6,22 @@ import {renderComponent, RenderPosition} from "../utils/render";
 import TripInfoComponent from "../components/trip-info";
 import PointController from "./point";
 
-const EMPTY_DATE = 0;
-
 const renderTripInfo = (days) => {
   const routeElement = document.querySelector(`.trip-info`);
   return renderComponent(routeElement, new TripInfoComponent(days), RenderPosition.BEFOREEND);
 };
 
-const renderEvents = (events, container, onDataChange, onViewChange) => {
+const renderEvents = (events, container, onDataChange, onViewChange, isEmptyDate = false) => {
   const pointControllers = [];
   const dates = Array.from(new Set(events.map((item) => new Date(item.dateStart).toDateString())));
 
   dates.forEach((date, dateIndex) => {
-    const dayComponent = new TripDayComponent(date, dateIndex + 1);
+    const dayComponent = !isEmptyDate ? new TripDayComponent(date, dateIndex + 1) : new TripDayComponent();
     const eventsListContainer = dayComponent.getElement().querySelector(`.trip-events__list`);
 
     events
       .filter((item) => {
-        return new Date(item.dateStart).toDateString() === date;
+        return !isEmptyDate ? new Date(item.dateStart).toDateString() === date : item;
       })
       .forEach((item) => {
         const pointController = new PointController(eventsListContainer, onDataChange, onViewChange);
@@ -108,11 +106,10 @@ export default class TripController {
     daysListElement.innerHTML = ``;
 
     if (sortedEvents.length) {
-      const emptyDayWithSortedEvents = renderTripDay(EMPTY_DATE, sortedEvents, this._onDataChange, this._onViewChange, this._pointControllers);
-      renderComponent(daysListElement, emptyDayWithSortedEvents, RenderPosition.BEFOREEND);
+      this._pointControllers = renderEvents(sortedEvents, daysListElement, this._onDataChange, this._onViewChange, true);
       return;
     }
 
-    renderDays(this._days, daysListElement, this._onDataChange, this._onViewChange, this._pointControllers);
+    this._pointControllers = renderEvents(this._events, daysListElement, this._onDataChange, this._onViewChange);
   }
 }
