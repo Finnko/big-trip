@@ -187,6 +187,10 @@ export default class TripEdit extends AbstractSmartComponent {
     this._favoriteButtonHandler = null;
     this._closeButtonHandler = null;
 
+    this._eventType = event.type;
+    this._eventCity = event.city;
+    this._eventDesc = event.description;
+
     this._subscribeOnEvents();
   }
 
@@ -223,6 +227,10 @@ export default class TripEdit extends AbstractSmartComponent {
   }
 
   reset() {
+    this._event.type = this._eventType;
+    this._event.city = this._eventCity;
+    this._event.description = this._eventDesc;
+
     this.rerender();
   }
 
