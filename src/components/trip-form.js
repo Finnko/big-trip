@@ -1,6 +1,6 @@
 import AbstractSmartComponent from "./abstract-smart-component";
 import {eventOptions, EventTypes} from "../const";
-import {destinations} from "../mocks/event";
+import {destinations, eventsData} from "../mocks/event";
 import {formatTime, castTimeFormat} from "../utils/common";
 
 const YEAR_OFFSET = 2;
@@ -86,7 +86,7 @@ const createDestinationsMarkup = () => {
 };
 
 const createEditEventTemplate = (event) => {
-  const {type, description, photos, dateStart, dateEnd, options, isFavorite, price} = event;
+  const {type, description, photos, dateStart, dateEnd, options, isFavorite, price, city} = event;
 
   const timeStartFormatted = castDateTimeFormat(dateStart);
   const timeEndFormatted = castDateTimeFormat(dateEnd);
@@ -112,7 +112,7 @@ const createEditEventTemplate = (event) => {
           <label class="event__label  event__type-output" for="event-destination-1">
             Sightseeing at
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}" list="destination-list-1">
           <datalist id="destination-list-1">
             ${destinationOptions}
           </datalist>
@@ -184,8 +184,8 @@ export default class TripEdit extends AbstractSmartComponent {
 
     this._event = event;
     this._submitHandler = null;
-    // this._closeButtonClickHandler = null;
-    // this._favoriteButtonHandler = null;
+    this._favoriteButtonHandler = null;
+    this._closeButtonHandler = null;
 
     this._subscribeOnEvents();
   }
@@ -197,11 +197,13 @@ export default class TripEdit extends AbstractSmartComponent {
   setFavoriteButtonHandler(handler) {
     this.getElement().querySelector(`.event__favorite-btn`)
       .addEventListener(`click`, handler);
+    this._favoriteButtonHandler = handler;
   }
 
   setCloseButtonClick(handler) {
     this.getElement().querySelector(`.event__rollup-btn`)
       .addEventListener(`click`, handler);
+    this._closeButtonHandler = handler;
   }
 
   setFormSubmitHandler(handler) {
@@ -211,8 +213,8 @@ export default class TripEdit extends AbstractSmartComponent {
 
   recoveryListeners() {
     this.setFormSubmitHandler(this._submitHandler);
-    // this.setCloseButtonClick(this._closeButtonClickHandler);
-    // this.setFavoriteButtonHandler(this._favoriteButtonHandler);
+    this.setFavoriteButtonHandler(this._favoriteButtonHandler);
+    this.setCloseButtonClick(this._closeButtonHandler);
     this._subscribeOnEvents();
   }
 
@@ -231,6 +233,22 @@ export default class TripEdit extends AbstractSmartComponent {
       .addEventListener(`click`, (evt) => {
         if (evt.target.tagName === `INPUT`) {
           this._event.type = evt.target.value;
+          this.rerender();
+        }
+      });
+
+    element.querySelector(`.event__input--destination`)
+      .addEventListener(`change`, (evt) => {
+        if (evt.target.tagName === `INPUT`) {
+          const currentCity = evt.target.value;
+
+          if (this._event.city === currentCity) {
+            return;
+          }
+
+          const index = eventsData.findIndex((item) => item.city === currentCity);
+          this._event.description = eventsData[index].description;
+          this._event.city = currentCity;
           this.rerender();
         }
       });
