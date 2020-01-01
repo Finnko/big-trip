@@ -13,7 +13,10 @@ const renderTripInfo = (days) => {
 
 const renderEvents = (events, container, onDataChange, onViewChange, isEmptyDate = false) => {
   const pointControllers = [];
-  const dates = Array.from(new Set(events.map((item) => new Date(item.dateStart).toDateString())));
+  let dates = Array.from(new Set(events.map((item) => new Date(item.dateStart).toDateString())));
+  if (isEmptyDate) {
+    dates = [1];
+  }
 
   dates.forEach((date, dateIndex) => {
     const dayComponent = !isEmptyDate ? new TripDayComponent(date, dateIndex + 1) : new TripDayComponent();
