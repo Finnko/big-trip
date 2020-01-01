@@ -647,6 +647,8 @@ main {
     background-image: url("../img/icons/sightseeing.png"); }
   .event__type-label--restaurant::before {
     background-image: url("../img/icons/restaurant.png"); }
+  .event__type-label--trip::before {
+    background-image: url("../img/icons/trip.png"); }
   .event__type-label:hover {
     color: #ffd054; }
 
