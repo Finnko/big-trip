@@ -1,4 +1,4 @@
-import {castDateFormat, timeTagFormatted, formatTime} from "../utils/common";
+import {castDurationFormat, timeTagFormatted, castTimeFormat} from "../utils/common";
 import AbstractComponent from "./abstract-component";
 
 const createOffersMarkup = (offers) => {
@@ -18,13 +18,13 @@ const getEventTimeDuration = (dateStart, dateEnd) => {
   const hoursDiff = Math.floor((dateEnd - dateStart) / (1000 * 60 * 60)) - daysDiff * 24;
   const minutesDiff = Math.abs(dateStart.getMinutes() - dateEnd.getMinutes());
 
-  let formattedInterval = daysDiff > 0 ? castDateFormat(daysDiff) : ``;
+  let formattedInterval = daysDiff > 0 ? castDurationFormat(daysDiff) : ``;
   if (hoursDiff > 0) {
-    formattedInterval += ` ${castDateFormat(hoursDiff, `H`)} `;
+    formattedInterval += ` ${castDurationFormat(hoursDiff, `H`)} `;
   } else {
     formattedInterval += ` `;
   }
-  formattedInterval += `${castDateFormat(minutesDiff, `M`)}`;
+  formattedInterval += `${castDurationFormat(minutesDiff, `M`)}`;
 
   return formattedInterval.trim();
 };
@@ -36,9 +36,9 @@ const getPriceOptions = (offers) => {
 const createTripEventTemplate = (event) => {
   const {type, title, price, dateStart, dateEnd, options} = event;
 
-  const timeStart = formatTime(dateStart);
+  const timeStart = castTimeFormat(dateStart);
   const timeStartTagFormat = timeTagFormatted(dateStart);
-  const timeEnd = formatTime(dateEnd);
+  const timeEnd = castTimeFormat(dateEnd);
   const timeEndTagFormat = timeTagFormatted(dateEnd);
   const offers = createOffersMarkup(Array.from(options));
   const priceWithOptions = price + getPriceOptions(options);

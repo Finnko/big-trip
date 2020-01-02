@@ -2,6 +2,8 @@ import AbstractSmartComponent from "./abstract-smart-component";
 import {eventOptions, EventTypes} from "../const";
 import {destinations, eventsData} from "../mocks/event";
 import {formatTime, castTimeFormat} from "../utils/common";
+import flatpickr from 'flatpickr';
+import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 const YEAR_OFFSET = 2;
 
@@ -10,7 +12,7 @@ const castDateTimeFormat = (date) => {
   const month = castTimeFormat(date.getMonth());
   const day = castTimeFormat(date.getDate());
 
-  return `${day}/${month}/${year} ${formatTime(date)}`;
+  return `${day}/${month}/${year} ${castTimeFormat(date)}`;
 };
 
 const createImagesMarkup = (images) => {
@@ -186,11 +188,13 @@ export default class TripEdit extends AbstractSmartComponent {
     this._submitHandler = null;
     this._favoriteButtonHandler = null;
     this._closeButtonHandler = null;
+    this._flatpickr = null;
 
     this._eventType = event.type;
     this._eventCity = event.city;
     this._eventDesc = event.description;
 
+    this._applyFlatpickr();
     this._subscribeOnEvents();
   }
 
@@ -224,6 +228,8 @@ export default class TripEdit extends AbstractSmartComponent {
 
   rerender() {
     super.rerender();
+
+    this._applyFlatpickr();
   }
 
   reset() {
@@ -232,6 +238,31 @@ export default class TripEdit extends AbstractSmartComponent {
     this._event.description = this._eventDesc;
 
     this.rerender();
+  }
+
+  _applyFlatpickr() {
+    if (this._flatpickr) {
+      this._flatpickr.destroy();
+      this._flatpickr = null;
+    }
+
+    const dateStartElement = this.getElement().querySelector(`#event-start-time-1`);
+    const dateEndElement = this.getElement().querySelector(`#event-end-time-1`);
+
+    const setFlatpickr = (input, date) => {
+      this._flatpickr = flatpickr(input, {
+        allowInput: true,
+        defaultDate: date,
+        enableTime: true,
+        dateFormat: `d/m/y H:i`,
+        locale: {
+          firstDayOfWeek: 1
+        }
+      });
+    };
+
+    setFlatpickr(dateStartElement, this._event.dateStart);
+    setFlatpickr(dateEndElement, this._event.dateEnd);
   }
 
   _subscribeOnEvents() {

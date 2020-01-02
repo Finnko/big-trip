@@ -1,3 +1,5 @@
+import moment from "moment";
+
 const getRandomInRange = function (min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
@@ -23,28 +25,15 @@ const getRandomDate = () => {
 };
 
 const castTimeFormat = (value) => {
-  return value < 10 ? `0${value}` : String(value);
+  return moment(value).format(`hh:mm`);
 };
 
-const castDateFormat = (value, liter = `D`) => {
+const castDurationFormat = (value, liter = `D`) => {
   return value < 10 ? `0${value}${liter}` : `${value}${liter}`;
 };
 
 const timeTagFormatted = (date) => {
-  const year = date.getFullYear();
-  const month = castTimeFormat(date.getMonth());
-  const day = castTimeFormat(date.getDate());
-  const hours = castTimeFormat(date.getHours());
-  const minutes = castTimeFormat(date.getMinutes());
-
-  return `${year}-${month}-${day}T${hours}:${minutes}`;
-};
-
-const formatTime = (date) => {
-  const hours = castTimeFormat(date.getHours());
-  const minutes = castTimeFormat(date.getMinutes());
-
-  return `${hours}:${minutes}`;
+  return moment(date).format(`YYYY-MM-DDThh:mm`);
 };
 
 const repeat = (count, fn) => {
@@ -52,6 +41,6 @@ const repeat = (count, fn) => {
 };
 
 export {
-  getRandomInRange, getRandomArrayItem, getRandomDate, formatTime, repeat,
-  timeTagFormatted, castDateFormat, castTimeFormat,
+  getRandomInRange, getRandomArrayItem, getRandomDate, repeat,
+  timeTagFormatted, castDurationFormat, castTimeFormat,
 };
