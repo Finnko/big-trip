@@ -1,7 +1,7 @@
 import AbstractSmartComponent from "./abstract-smart-component";
 import {eventOptions, EventTypes} from "../const";
 import {destinations, eventsData} from "../mocks/event";
-import {formatTime, castTimeFormat} from "../utils/common";
+import {castTimeFormat} from "../utils/common";
 import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
