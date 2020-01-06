@@ -25,7 +25,7 @@ const getRandomDate = () => {
 };
 
 const castTimeFormat = (value) => {
-  return moment(value).format(`hh:mm`);
+  return moment(value).format(`HH:mm`);
 };
 
 const castDurationFormat = (value, liter = `D`) => {
@@ -33,14 +33,36 @@ const castDurationFormat = (value, liter = `D`) => {
 };
 
 const timeTagFormatted = (date) => {
-  return moment(date).format(`YYYY-MM-DDThh:mm`);
+  return moment(date).format(`YYYY-MM-DDTHH:mm`);
+};
+
+const inputTagTimeFormatted = (date) => {
+  return moment(date).format(`DD/MM/YY HH:mm`);
 };
 
 const repeat = (count, fn) => {
   return Array(count).fill(``).map(fn);
 };
 
+const getEventDuration = (dateA, dateB) => {
+  const a = moment(dateA);
+  const b = moment(dateB);
+  const daysDiff = b.diff(a, `days`);
+  const hoursDiff = b.diff(a, `hours`) - daysDiff * 24;
+  const minutesDiff = b.diff(a, `minutes`) - daysDiff * 24 * 60 - hoursDiff * 60;
+
+  let formattedInterval = daysDiff > 0 ? castDurationFormat(daysDiff) : ``;
+  if (hoursDiff > 0) {
+    formattedInterval += ` ${castDurationFormat(hoursDiff, `H`)} `;
+  } else {
+    formattedInterval += ` `;
+  }
+  formattedInterval += `${castDurationFormat(minutesDiff, `M`)}`;
+
+  return formattedInterval.trim();
+};
+
 export {
-  getRandomInRange, getRandomArrayItem, getRandomDate, repeat,
-  timeTagFormatted, castDurationFormat, castTimeFormat,
+  getRandomInRange, getRandomArrayItem, getRandomDate, repeat, getEventDuration,
+  timeTagFormatted, castDurationFormat, castTimeFormat, inputTagTimeFormatted
 };

@@ -1,19 +1,9 @@
 import AbstractSmartComponent from "./abstract-smart-component";
 import {eventOptions, EventTypes} from "../const";
 import {destinations, eventsData} from "../mocks/event";
-import {castTimeFormat} from "../utils/common";
+import {inputTagTimeFormatted} from "../utils/common";
 import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
-
-const YEAR_OFFSET = 2;
-
-const castDateTimeFormat = (date) => {
-  const year = date.getFullYear().toString().substring(YEAR_OFFSET);
-  const month = castTimeFormat(date.getMonth());
-  const day = castTimeFormat(date.getDate());
-
-  return `${day}/${month}/${year} ${castTimeFormat(date)}`;
-};
 
 const createImagesMarkup = (images) => {
   return images.map((image) => {
@@ -90,8 +80,8 @@ const createDestinationsMarkup = () => {
 const createEditEventTemplate = (event) => {
   const {type, description, photos, dateStart, dateEnd, options, isFavorite, price, city} = event;
 
-  const timeStartFormatted = castDateTimeFormat(dateStart);
-  const timeEndFormatted = castDateTimeFormat(dateEnd);
+  const timeStartFormatted = inputTagTimeFormatted(dateStart);
+  const timeEndFormatted = inputTagTimeFormatted(dateEnd);
   const images = createImagesMarkup(photos);
   const types = createTypesMarkup(EventTypes, type);
   const offers = createOffersMarkup(eventOptions, options);
