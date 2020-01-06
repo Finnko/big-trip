@@ -77,14 +77,15 @@ const createDestinationsMarkup = () => {
   }).join(`\n`);
 };
 
-const createEditEventTemplate = (event) => {
-  const {type, description, photos, dateStart, dateEnd, options, isFavorite, price, city} = event;
+const createEditEventTemplate = (event, options = {}) => {
+  const {photos, dateStart, dateEnd, offers, isFavorite, price} = event;
+  const {currentCity, currentDescription, currentType} = options;
 
   const timeStartFormatted = inputTagTimeFormatted(dateStart);
   const timeEndFormatted = inputTagTimeFormatted(dateEnd);
   const images = createImagesMarkup(photos);
-  const types = createTypesMarkup(EventTypes, type);
-  const offers = createOffersMarkup(eventOptions, options);
+  const types = createTypesMarkup(EventTypes, currentType);
+  const currentOffers = createOffersMarkup(eventOptions, offers);
   const destinationOptions = createDestinationsMarkup();
 
   return (
@@ -93,7 +94,7 @@ const createEditEventTemplate = (event) => {
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-1">
             <span class="visually-hidden">Choose event type</span>
-            <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
+            <img class="event__type-icon" width="17" height="17" src="img/icons/${currentType}.png" alt="Event type icon">
           </label>
           <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
           <div class="event__type-list">
@@ -104,7 +105,7 @@ const createEditEventTemplate = (event) => {
           <label class="event__label  event__type-output" for="event-destination-1">
             Sightseeing at
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${currentCity}" list="destination-list-1">
           <datalist id="destination-list-1">
             ${destinationOptions}
           </datalist>
@@ -151,13 +152,13 @@ const createEditEventTemplate = (event) => {
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
           <div class="event__available-offers">
-            ${offers}
+            ${currentOffers}
           </div>
         </section>
 
         <section class="event__section  event__section--destination">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-          <p class="event__destination-description">${description}</p>
+          <p class="event__destination-description">${currentDescription}</p>
 
           <div class="event__photos-container">
             <div class="event__photos-tape">
@@ -180,16 +181,20 @@ export default class TripEdit extends AbstractSmartComponent {
     this._closeButtonHandler = null;
     this._flatpickr = null;
 
-    this._eventType = event.type;
-    this._eventCity = event.city;
-    this._eventDesc = event.description;
+    this._currentType = event.type;
+    this._currentCity = event.city;
+    this._currentDescription = event.description;
 
     this._applyFlatpickr();
     this._subscribeOnEvents();
   }
 
   getTemplate() {
-    return createEditEventTemplate(this._event);
+    return createEditEventTemplate(this._event, {
+      currentType: this._currentType,
+      currentCity: this._currentCity,
+      currentDescription: this._currentDescription,
+    });
   }
 
   setFavoriteButtonHandler(handler) {
@@ -223,9 +228,11 @@ export default class TripEdit extends AbstractSmartComponent {
   }
 
   reset() {
-    this._event.type = this._eventType;
-    this._event.city = this._eventCity;
-    this._event.description = this._eventDesc;
+    const event = this._event;
+
+    this._currentType = event.type;
+    this._currentCity = event.city;
+    this._currentDescription = event.description;
 
     this.rerender();
   }
@@ -246,8 +253,8 @@ export default class TripEdit extends AbstractSmartComponent {
         enableTime: true,
         dateFormat: `d/m/y H:i`,
         locale: {
-          firstDayOfWeek: 1
-        }
+          firstDayOfWeek: 1,
+        },
       });
     };
 
@@ -261,7 +268,7 @@ export default class TripEdit extends AbstractSmartComponent {
     element.querySelector(`.event__type-list`)
       .addEventListener(`click`, (evt) => {
         if (evt.target.tagName === `INPUT`) {
-          this._event.type = evt.target.value;
+          this._currentType = evt.target.value;
           this.rerender();
         }
       });
@@ -269,15 +276,15 @@ export default class TripEdit extends AbstractSmartComponent {
     element.querySelector(`.event__input--destination`)
       .addEventListener(`change`, (evt) => {
         if (evt.target.tagName === `INPUT`) {
-          const currentCity = evt.target.value;
+          const targetCity = evt.target.value;
 
-          if (this._event.city === currentCity) {
+          if (this._currentCity === targetCity) {
             return;
           }
 
-          const index = eventsData.findIndex((item) => item.city === currentCity);
-          this._event.description = eventsData[index].description;
-          this._event.city = currentCity;
+          const index = eventsData.findIndex((item) => item.city === targetCity);
+          this._currentDescription = eventsData[index].description;
+          this._currentCity = targetCity;
           this.rerender();
         }
       });

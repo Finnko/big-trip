@@ -18,14 +18,14 @@ const getPriceOptions = (offers) => {
 };
 
 const createTripEventTemplate = (event) => {
-  const {type, title, price, dateStart, dateEnd, options} = event;
+  const {type, title, price, dateStart, dateEnd, offers} = event;
 
   const timeStart = castTimeFormat(dateStart);
   const timeStartTagFormat = timeTagFormatted(dateStart);
   const timeEnd = castTimeFormat(dateEnd);
   const timeEndTagFormat = timeTagFormatted(dateEnd);
-  const offers = createOffersMarkup(Array.from(options));
-  const priceWithOptions = price + getPriceOptions(options);
+  const currentOffers = createOffersMarkup(Array.from(offers));
+  const priceWithOptions = price + getPriceOptions(offers);
 
   const duration = getEventDuration(dateStart, dateEnd);
 
@@ -49,7 +49,7 @@ const createTripEventTemplate = (event) => {
         </p>
         <h4 class="visually-hidden">Offers:</h4>
         <ul class="event__selected-offers">
-          ${offers}
+          ${currentOffers}
         </ul>
         <button class="event__rollup-btn" type="button">
           <span class="visually-hidden">Open event</span>
