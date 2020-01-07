@@ -1,14 +1,25 @@
+import {FilterType} from "../const";
+import {getEventsByFilter} from "../utils/filter";
+
 export default class Point {
   constructor() {
     this._events = [];
+    this._activeFilterType = FilterType.EVERYTHING;
+
+    this._filterChangeHandlers = [];
   }
 
   getEvents() {
-    return this._events;
+    return getEventsByFilter(this._events, this._activeFilterType);
   }
 
   setEvents(events) {
     this._events = Array.from(events);
+  }
+
+  setFilter(filterType) {
+    this._activeFilterType = filterType;
+    this._filterChangeHandlers.forEach((handler) => handler);
   }
 
   updateEvent(id, event) {
@@ -21,5 +32,9 @@ export default class Point {
     this._events = [].concat(this._events.slice(0, index), event, this._events.slice(index + 1));
 
     return true;
+  }
+
+  setFilterChangeHandler(handler) {
+    this._filterChangeHandlers.push(handler);
   }
 }

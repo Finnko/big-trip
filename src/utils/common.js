@@ -62,7 +62,13 @@ const getEventDuration = (dateA, dateB) => {
   return formattedInterval.trim();
 };
 
+const isOneDay = (dateA, dateB) => {
+  const a = moment(dateA);
+  const b = moment(dateB);
+  return a.diff(b, `days`) === 0 && dateA.getDate() === dateB.getDate();
+};
+
 export {
   getRandomInRange, getRandomArrayItem, getRandomDate, repeat, getEventDuration,
-  timeTagFormatted, castDurationFormat, castTimeFormat, inputTagTimeFormatted
+  timeTagFormatted, castDurationFormat, castTimeFormat, inputTagTimeFormatted, isOneDay
 };
