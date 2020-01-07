@@ -46,6 +46,7 @@ const generateEvent = () => {
   }
 
   return {
+    id: String(new Date() + Math.random()),
     type: eventType,
     title,
     city,

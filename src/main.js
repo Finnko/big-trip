@@ -2,6 +2,7 @@ import MenuComponent from "./components/menu";
 import FilterComponent from "./components/filter";
 import TripBoardComponent from "./components/trip-board";
 import TripController from "./controllers/trip";
+import EventsModel from "./models/point";
 
 import {renderComponent, RenderPosition} from "./utils/render";
 import {eventsData} from "./mocks/event";
@@ -16,6 +17,9 @@ renderComponent(controlElement, new FilterComponent(), RenderPosition.BEFOREEND)
 
 const boardComponent = new TripBoardComponent();
 renderComponent(contentElement, boardComponent, RenderPosition.BEFOREEND);
+
+const eventsModel = new EventsModel();
+eventsModel.setEvents(eventsData);
 
 const tripController = new TripController(boardComponent);
 tripController.render(eventsData);
