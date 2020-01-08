@@ -4,7 +4,7 @@ import NoEventsComponent from "../components/no-events";
 import TripDaysComponent from "../components/trip-days";
 import {renderComponent, RenderPosition} from "../utils/render";
 import TripInfoComponent from "../components/trip-info";
-import PointController from "./point";
+import PointController, {Mode as EventControllerMode, emptyEvent} from "./point";
 
 const renderTripInfo = (days) => {
   const routeElement = document.querySelector(`.trip-info`);
@@ -27,7 +27,7 @@ const renderEvents = (events, container, onDataChange, onViewChange, isSortedByD
       })
       .forEach((item) => {
         const pointController = new PointController(eventsListContainer, onDataChange, onViewChange);
-        pointController.render(item);
+        pointController.render(item, EventControllerMode.DEFAULT);
         pointControllers.push(pointController);
       });
 
@@ -42,6 +42,7 @@ export default class TripController {
     this._container = container;
     this._eventsModel = eventsModel;
     this._pointControllers = [];
+    this._creatingEvent = null;
 
     this._noEventsComponent = new NoEventsComponent();
     this._sortComponent = new SortComponent();
@@ -72,10 +73,23 @@ export default class TripController {
     this._renderEvents(events, true);
   }
 
-  _removeEvents() {
+  createEvent() {
+    if (this._creatingEvent) {
+      return;
+    }
     const daysListElement = this._daysListComponent.getElement();
 
-    daysListElement.innerHTML = ``;
+    this._creatingEvent = new PointController(daysListElement, this._onDataChange, this._onViewChange);
+    this._creatingEvent.render(emptyEvent, EventControllerMode.ADDING);
+  }
+
+  _updateEvents() {
+    this._removeEvents();
+    this._renderEvents(this._eventsModel.getEvents(), true);
+  }
+
+  _removeEvents() {
+    this._pointControllers.forEach((pointController) => pointController.destroy());
     this._pointControllers = [];
   }
 
@@ -86,10 +100,31 @@ export default class TripController {
   }
 
   _onDataChange(pointController, oldData, newData) {
-    const isSuccess = this._eventsModel.updateEvent(oldData.id, newData);
+    if (oldData === emptyEvent) {
+      this._creatingEvent = null;
+      if (newData === null) {
+        pointController.destroy();
+        this._updateEvents();
+      } else {
+        this._eventsModel.addEvent(newData);
+        pointController.render(newData, EventControllerMode.DEFAULT);
 
-    if (isSuccess) {
-      pointController.render(newData);
+        const destroyedEvent = this._pointControllers.pop();
+        if (destroyedEvent) {
+          destroyedEvent.destroy();
+        }
+
+        this._pointControllers = [].concat(pointController, this._pointControllers);
+      }
+    } else if (newData === null) {
+      this._eventsModel.removeEvent(oldData.id);
+      this._updateEvents();
+    } else {
+      const isSuccess = this._eventsModel.updateEvent(oldData.id, newData);
+
+      if (isSuccess) {
+        pointController.render(newData, EventControllerMode.DEFAULT);
+      }
     }
   }
 
@@ -126,7 +161,6 @@ export default class TripController {
   }
 
   _onFilterChange() {
-    this._removeEvents();
-    this._renderEvents(this._eventsModel.getEvents(), true);
+    this._updateEvents();
   }
 }

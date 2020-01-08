@@ -1,25 +1,26 @@
 import TripEventComponent from "../components/trip-event";
 import TripEventEditComponent from "../components/trip-form";
 import {renderComponent, replaceComponent, RenderPosition} from '../utils/render.js';
+import {removeElement} from "../utils/render";
 
 const Mode = {
   DEFAULT: `default`,
   EDIT: `edit`,
-  ADDING: `adding`
+  ADDING: `adding`,
 };
 
 const emptyEvent = {
   id: String(new Date() + Math.random()),
-  type: ``,
+  type: `flight`,
   title: ``,
   city: ``,
-  description: [],
+  description: ``,
   photos: [],
   dateStart: null,
   dateEnd: null,
-  price: null,
+  price: 0,
   isFavorite: false,
-  offers: []
+  offers: [],
 };
 
 export default class PointController {
@@ -36,9 +37,10 @@ export default class PointController {
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
   }
 
-  render(event) {
+  render(event, mode) {
     const oldTripEventComponent = this._tripEventComponent;
     const oldTripEventEditComponent = this._tripEventEditComponent;
+    this._mode = mode;
 
     this._tripEventComponent = new TripEventComponent(event);
     this._tripEventEditComponent = new TripEventEditComponent(event);
@@ -48,12 +50,7 @@ export default class PointController {
       document.addEventListener(`keydown`, this._onEscKeyDown);
     });
 
-    this._tripEventEditComponent.setFormSubmitHandler((evt) => {
-      evt.preventDefault();
-      this._replaceFormToEvent();
-    });
-
-    this._tripEventEditComponent.setCloseButtonClick(() => {
+    this._tripEventEditComponent.setCloseButtonClickHandler(() => {
       this._replaceFormToEvent();
     });
 
@@ -63,12 +60,39 @@ export default class PointController {
       }));
     });
 
-    if (oldTripEventComponent && oldTripEventEditComponent) {
-      replaceComponent(this._tripEventComponent, oldTripEventComponent);
-      replaceComponent(this._tripEventEditComponent, oldTripEventEditComponent);
-    } else {
-      renderComponent(this._container, this._tripEventComponent, RenderPosition.BEFOREEND);
+    this._tripEventEditComponent.setFormSubmitHandler((evt) => {
+      evt.preventDefault();
+      const data = this._tripEventEditComponent.getData();
+      this._onDataChange(this, event, data);
+    });
+
+    this._tripEventEditComponent.setDeleteButtonClickHandler(() => this._onDataChange(this, event, null));
+
+    switch (mode) {
+      case Mode.DEFAULT:
+        if (oldTripEventComponent && oldTripEventEditComponent) {
+          replaceComponent(this._tripEventComponent, oldTripEventComponent);
+          replaceComponent(this._tripEventEditComponent, oldTripEventEditComponent);
+          this._replaceFormToEvent();
+        } else {
+          renderComponent(this._container, this._tripEventComponent, RenderPosition.BEFOREEND);
+        }
+        break;
+      case Mode.ADDING:
+        if (oldTripEventComponent && oldTripEventEditComponent) {
+          removeElement(oldTripEventComponent);
+          removeElement(oldTripEventEditComponent);
+        }
+        document.addEventListener(`keydown`, this._onEscKeyDown);
+        renderComponent(this._container, this._tripEventEditComponent, RenderPosition.AFTERBEGIN);
+        break;
     }
+  }
+
+  destroy() {
+    removeElement(this._tripEventComponent);
+    removeElement(this._tripEventEditComponent);
+    document.removeEventListener(`keydown`, this._onEscKeyDown);
   }
 
   setDefaultView() {
@@ -99,8 +123,12 @@ export default class PointController {
     const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
 
     if (isEscKey) {
+      if (this._mode === Mode.ADDING) {
+        this._onDataChange(this, emptyEvent, null);
+      }
       this._replaceFormToEvent();
-      document.removeEventListener(`keydown`, this._onEscKeyDown);
     }
   }
 }
+
+export {Mode, emptyEvent};

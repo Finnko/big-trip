@@ -12,7 +12,15 @@ const siteMainElement = document.querySelector(`.page-main`);
 const controlElement = siteHeaderElement.querySelector(`.trip-controls`);
 const contentElement = siteMainElement.querySelector(`.page-body__container`);
 
-renderComponent(controlElement, new MenuComponent(), RenderPosition.BEFOREEND);
+const menuComponent = new MenuComponent();
+console.log(menuComponent.getElement());
+renderComponent(controlElement, menuComponent, RenderPosition.BEFOREEND);
+
+document.querySelector(`.trip-main__event-add-btn`)
+  .addEventListener(`click`, () => {
+    tripController.createEvent();
+  });
+
 const eventsModel = new EventsModel();
 eventsModel.setEvents(eventsData);
 

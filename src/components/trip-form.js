@@ -171,6 +171,17 @@ const createEditEventTemplate = (event, options = {}) => {
   );
 };
 
+const parseFormData = (formData) => {
+  return {
+    type: formData.get(`event-type`),
+    destination: formData.get(`event-destination`),
+    dateStart: formData.get(`event-start-time`),
+    dateEnd: formData.get(`event-end-time`),
+    price: formData.get(`event-price`),
+    isFavorite: false
+  };
+};
+
 export default class TripEdit extends AbstractSmartComponent {
   constructor(event) {
     super();
@@ -179,6 +190,7 @@ export default class TripEdit extends AbstractSmartComponent {
     this._submitHandler = null;
     this._favoriteButtonHandler = null;
     this._closeButtonHandler = null;
+    this._deleteButtonHandler = null;
     this._flatpickr = null;
 
     this._currentType = event.type;
@@ -197,16 +209,38 @@ export default class TripEdit extends AbstractSmartComponent {
     });
   }
 
+  getData() {
+    const form = this.getElement().querySelector(`.event`);
+    const formData = new FormData(form);
+
+    return parseFormData(formData);
+  }
+
+  removeElement() {
+    if (this._flatpickr) {
+      this._flatpickr.destroy();
+      this._flatpickr = null;
+    }
+
+    super.removeElement();
+  }
+
   setFavoriteButtonHandler(handler) {
     this.getElement().querySelector(`.event__favorite-btn`)
       .addEventListener(`click`, handler);
     this._favoriteButtonHandler = handler;
   }
 
-  setCloseButtonClick(handler) {
+  setCloseButtonClickHandler(handler) {
     this.getElement().querySelector(`.event__rollup-btn`)
       .addEventListener(`click`, handler);
     this._closeButtonHandler = handler;
+  }
+
+  setDeleteButtonClickHandler(handler) {
+    this.getElement().querySelector(`.event__reset-btn`)
+      .addEventListener(`click`, handler);
+    this._deleteButtonHandler = handler;
   }
 
   setFormSubmitHandler(handler) {
@@ -217,7 +251,8 @@ export default class TripEdit extends AbstractSmartComponent {
   recoveryListeners() {
     this.setFormSubmitHandler(this._submitHandler);
     this.setFavoriteButtonHandler(this._favoriteButtonHandler);
-    this.setCloseButtonClick(this._closeButtonHandler);
+    this.setCloseButtonClickHandler(this._closeButtonHandler);
+    this.setDeleteButtonClickHandler(this._deleteButtonHandler);
     this._subscribeOnEvents();
   }
 
