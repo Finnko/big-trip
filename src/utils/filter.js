@@ -13,17 +13,13 @@ const getFutureEvents = (events, date) => {
 
 const getEventsByFilter = (events, filterType) => {
   const nowDate = new Date();
-  console.log(filterType);
 
   switch (filterType) {
     case FilterType.EVERYTHING:
-      console.log(1);
       return events;
     case FilterType.PAST:
-      console.log(2);
       return getPastEvents(events, nowDate);
     case FilterType.FUTURE:
-      console.log(3);
       return getFutureEvents(events, nowDate);
   }
 

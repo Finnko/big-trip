@@ -19,7 +19,7 @@ export default class Point {
 
   setFilter(filterType) {
     this._activeFilterType = filterType;
-    this._filterChangeHandlers.forEach((handler) => handler);
+    this._callHandlers(this._filterChangeHandlers);
   }
 
   updateEvent(id, event) {
@@ -36,5 +36,9 @@ export default class Point {
 
   setFilterChangeHandler(handler) {
     this._filterChangeHandlers.push(handler);
+  }
+
+  _callHandlers(handlers) {
+    handlers.forEach((handler) => handler());
   }
 }

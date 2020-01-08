@@ -5,6 +5,21 @@ import {renderComponent, replaceComponent, RenderPosition} from '../utils/render
 const Mode = {
   DEFAULT: `default`,
   EDIT: `edit`,
+  ADDING: `adding`
+};
+
+const emptyEvent = {
+  id: String(new Date() + Math.random()),
+  type: ``,
+  title: ``,
+  city: ``,
+  description: [],
+  photos: [],
+  dateStart: null,
+  dateEnd: null,
+  price: null,
+  isFavorite: false,
+  offers: []
 };
 
 export default class PointController {
