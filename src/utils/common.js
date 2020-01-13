@@ -24,6 +24,8 @@ const getRandomDate = () => {
   return targetDate;
 };
 
+const parseDate = (dateString) => moment(dateString, `DD/MM/YY HH:mm`).valueOf();
+
 const castTimeFormat = (value) => {
   return moment(value).format(`HH:mm`);
 };
@@ -69,6 +71,6 @@ const isOneDay = (dateA, dateB) => {
 };
 
 export {
-  getRandomInRange, getRandomArrayItem, getRandomDate, repeat, getEventDuration,
+  getRandomInRange, getRandomArrayItem, getRandomDate, repeat, getEventDuration, parseDate,
   timeTagFormatted, castDurationFormat, castTimeFormat, inputTagTimeFormatted, isOneDay
 };

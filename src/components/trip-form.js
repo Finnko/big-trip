@@ -1,7 +1,7 @@
 import AbstractSmartComponent from "./abstract-smart-component";
 import {eventOptions, EventTypes} from "../const";
 import {destinations, eventsData} from "../mocks/event";
-import {inputTagTimeFormatted} from "../utils/common";
+import {parseDate, inputTagTimeFormatted} from "../utils/common";
 import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
@@ -172,11 +172,31 @@ const createEditEventTemplate = (event, options = {}) => {
 };
 
 const parseFormData = (formData) => {
+  const type = formData.get(`event-type`);
+  const city = formData.get(`event-destination`);
+  let delimiter = ``;
+
+  if (EventTypes.TRANSFER.includes(type)) {
+    delimiter = `to`;
+  } else {
+    delimiter = `in`;
+  }
+
+  const title = `${type} ${delimiter} ${city}`;
+
+  let dateStart = parseDate(formData.get(`event-start-time`));
+  let dateEnd = parseDate(formData.get(`event-end-time`));
+
+  if (dateStart > dateEnd) {
+    [dateStart, dateEnd] = [dateEnd, dateStart];
+  }
+
   return {
-    type: formData.get(`event-type`),
-    city: formData.get(`event-destination`),
-    dateStart: formData.get(`event-start-time`),
-    dateEnd: formData.get(`event-end-time`),
+    type,
+    city,
+    title,
+    dateStart,
+    dateEnd,
     price: formData.get(`event-price`),
   };
 };
