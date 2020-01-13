@@ -60,6 +60,10 @@ export default class Point {
     this._filterChangeHandlers.push(handler);
   }
 
+  setDataChangeHandler(handler) {
+    this._dataChangeHandlers.push(handler);
+  }
+
   _callHandlers(handlers) {
     handlers.forEach((handler) => handler());
   }

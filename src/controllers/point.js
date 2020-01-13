@@ -10,14 +10,14 @@ const Mode = {
 };
 
 const emptyEvent = {
-  id: String(new Date() + Math.random()),
-  type: `flight`,
+  id: String(Date.now() + Math.random()),
+  type: `bus`,
   title: ``,
   city: ``,
   description: ``,
   photos: [],
-  dateStart: null,
-  dateEnd: null,
+  dateStart: Date.now(),
+  dateEnd: Date.now(),
   price: 0,
   isFavorite: false,
   offers: [],
@@ -63,6 +63,7 @@ export default class PointController {
     this._tripEventEditComponent.setFormSubmitHandler((evt) => {
       evt.preventDefault();
       const data = this._tripEventEditComponent.getData();
+      console.log(`pointData`, data);
       this._onDataChange(this, event, data);
     });
 

@@ -12,9 +12,7 @@ const siteMainElement = document.querySelector(`.page-main`);
 const controlElement = siteHeaderElement.querySelector(`.trip-controls`);
 const contentElement = siteMainElement.querySelector(`.page-body__container`);
 
-const menuComponent = new MenuComponent();
-console.log(menuComponent.getElement());
-renderComponent(controlElement, menuComponent, RenderPosition.BEFOREEND);
+renderComponent(controlElement, new MenuComponent(), RenderPosition.BEFOREEND);
 
 document.querySelector(`.trip-main__event-add-btn`)
   .addEventListener(`click`, () => {

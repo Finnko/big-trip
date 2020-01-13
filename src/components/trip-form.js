@@ -16,8 +16,7 @@ const createImagesMarkup = (images) => {
 const createGroupTypesMarkup = (group, currentType) => {
   return group.map((type) => {
     const typeIcon = type.toLowerCase();
-    const isChecked = group.find((chosenType) => chosenType === currentType);
-
+    const isChecked = type === currentType;
     return (
       `<div class="event__type-item">
          <input
@@ -25,7 +24,7 @@ const createGroupTypesMarkup = (group, currentType) => {
            class="event__type-input  visually-hidden"
            type="radio"
            name="event-type"
-           value="${typeIcon}"
+           value="${type}"
            ${isChecked ? `checked` : ``}
          >
          <label class="event__type-label  event__type-label--${typeIcon}" for="event-type-${typeIcon}-1">
@@ -40,7 +39,7 @@ const createTypesMarkup = (allTypes, currentType) => {
   return Object.keys(allTypes).map((group) => {
     return (
       `<fieldset class="event__type-group">
-        <legend class="visually-hidden">${allTypes[group]}</legend>
+        <legend class="visually-hidden">${group.toLowerCase()}</legend>
           ${createGroupTypesMarkup(allTypes[group], currentType)}
       </fieldset>`
     );
@@ -83,9 +82,10 @@ const createEditEventTemplate = (event, options = {}) => {
 
   const timeStartFormatted = inputTagTimeFormatted(dateStart);
   const timeEndFormatted = inputTagTimeFormatted(dateEnd);
-  const images = createImagesMarkup(photos);
+  const images = photos ? createImagesMarkup(photos) : ``;
   const types = createTypesMarkup(EventTypes, currentType);
-  const currentOffers = createOffersMarkup(eventOptions, offers);
+  const currentOffers = offers ? createOffersMarkup(eventOptions, offers) : ``;
+
   const destinationOptions = createDestinationsMarkup();
 
   return (
@@ -174,11 +174,10 @@ const createEditEventTemplate = (event, options = {}) => {
 const parseFormData = (formData) => {
   return {
     type: formData.get(`event-type`),
-    destination: formData.get(`event-destination`),
+    city: formData.get(`event-destination`),
     dateStart: formData.get(`event-start-time`),
     dateEnd: formData.get(`event-end-time`),
     price: formData.get(`event-price`),
-    isFavorite: false
   };
 };
 
@@ -210,9 +209,8 @@ export default class TripEdit extends AbstractSmartComponent {
   }
 
   getData() {
-    const form = this.getElement().querySelector(`.event`);
+    const form = this.getElement();
     const formData = new FormData(form);
-
     return parseFormData(formData);
   }
 

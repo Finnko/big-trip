@@ -89,6 +89,9 @@ export default class TripController {
   }
 
   _removeEvents() {
+    const daysListElement = this._daysListComponent.getElement();
+    daysListElement.innerHTML = ``;
+
     this._pointControllers.forEach((pointController) => pointController.destroy());
     this._pointControllers = [];
   }
@@ -100,6 +103,8 @@ export default class TripController {
   }
 
   _onDataChange(pointController, oldData, newData) {
+    console.log(`olddata`, oldData);
+    console.log(`newdata`, newData);
     if (oldData === emptyEvent) {
       this._creatingEvent = null;
       if (newData === null) {
@@ -109,12 +114,8 @@ export default class TripController {
         this._eventsModel.addEvent(newData);
         pointController.render(newData, EventControllerMode.DEFAULT);
 
-        const destroyedEvent = this._pointControllers.pop();
-        if (destroyedEvent) {
-          destroyedEvent.destroy();
-        }
-
         this._pointControllers = [].concat(pointController, this._pointControllers);
+
       }
     } else if (newData === null) {
       this._eventsModel.removeEvent(oldData.id);
