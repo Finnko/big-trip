@@ -1,4 +1,5 @@
 import moment from "moment";
+import {EventTypes} from "../const";
 
 const getRandomInRange = function (min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -22,6 +23,18 @@ const getRandomDate = () => {
   targetDate.setHours(hours, minutes);
 
   return targetDate;
+};
+
+const getTripTitle = (type, city) => {
+  let delimiter = ``;
+
+  if (EventTypes.TRANSFER.includes(type)) {
+    delimiter = `to`;
+  } else {
+    delimiter = `in`;
+  }
+
+  return `${type} ${delimiter} ${city}`;
 };
 
 const parseDate = (dateString) => moment(dateString, `DD/MM/YY HH:mm`).valueOf();
@@ -71,6 +84,6 @@ const isOneDay = (dateA, dateB) => {
 };
 
 export {
-  getRandomInRange, getRandomArrayItem, getRandomDate, repeat, getEventDuration, parseDate,
+  getRandomInRange, getRandomArrayItem, getRandomDate, getTripTitle, repeat, getEventDuration, parseDate,
   timeTagFormatted, castDurationFormat, castTimeFormat, inputTagTimeFormatted, isOneDay
 };

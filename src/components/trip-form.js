@@ -1,7 +1,8 @@
 import AbstractSmartComponent from "./abstract-smart-component";
 import {eventOptions, EventTypes} from "../const";
 import {destinations, eventsData} from "../mocks/event";
-import {parseDate, inputTagTimeFormatted} from "../utils/common";
+import {Mode} from "../controllers/point";
+import {parseDate, inputTagTimeFormatted, getTripTitle} from "../utils/common";
 import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
@@ -78,8 +79,7 @@ const createDestinationsMarkup = () => {
 
 const createEditEventTemplate = (event, options = {}) => {
   const {photos, dateStart, dateEnd, offers, isFavorite, price} = event;
-  const {currentCity, currentDescription, currentType} = options;
-
+  const {currentCity, currentDescription, currentType, mode} = options;
   const timeStartFormatted = inputTagTimeFormatted(dateStart);
   const timeEndFormatted = inputTagTimeFormatted(dateEnd);
   const images = photos ? createImagesMarkup(photos) : ``;
@@ -89,7 +89,7 @@ const createEditEventTemplate = (event, options = {}) => {
   const destinationOptions = createDestinationsMarkup();
 
   return (
-    `<form class="trip-events__item  event  event--edit" action="#" method="post">
+    `<form class="trip-events__item event  event--edit" action="#" method="post">
       <header class="event__header">
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-1">
@@ -129,23 +129,29 @@ const createEditEventTemplate = (event, options = {}) => {
           <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
         </div>
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">Cancel</button>
-        <input
-          id="event-favorite-1"
-          class="event__favorite-checkbox  visually-hidden"
-          type="checkbox"
-          name="event-favorite"
-          ${isFavorite ? `checked` : ``}
-        >
-        <label class="event__favorite-btn" for="event-favorite-1">
-        <span class="visually-hidden">Add to favorite</span>
-        <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
-          <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
-        </svg>
-        </label>
-        <button class="event__rollup-btn" type="button">
-          <span class="visually-hidden">Open event</span>
-        </button>
+
+        <button class="event__reset-btn" type="reset">${mode === Mode.ADDING ? `Cancel` : `Delete`}</button>
+
+        ${mode === Mode.ADDING
+      ? ``
+      : `<input
+            id="event-favorite-1"
+            class="event__favorite-checkbox  visually-hidden"
+            type="checkbox"
+            name="event-favorite"
+            ${isFavorite ? `checked` : ``}
+          >
+          <label class="event__favorite-btn" for="event-favorite-1">
+            <span class="visually-hidden">Add to favorite</span>
+            <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
+              <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
+            </svg>
+          </label>
+          <button class="event__rollup-btn" type="button">
+            <span class="visually-hidden">Open event</span>
+          </button>`
+    }
+
       </header>
       <section class="event__details">
         <section class="event__section  event__section--offers">
@@ -174,16 +180,7 @@ const createEditEventTemplate = (event, options = {}) => {
 const parseFormData = (formData) => {
   const type = formData.get(`event-type`);
   const city = formData.get(`event-destination`);
-  let delimiter = ``;
-
-  if (EventTypes.TRANSFER.includes(type)) {
-    delimiter = `to`;
-  } else {
-    delimiter = `in`;
-  }
-
-  const title = `${type} ${delimiter} ${city}`;
-
+  const title = getTripTitle(type, city);
   let dateStart = parseDate(formData.get(`event-start-time`));
   let dateEnd = parseDate(formData.get(`event-end-time`));
 
@@ -212,6 +209,7 @@ export default class TripEdit extends AbstractSmartComponent {
     this._deleteButtonHandler = null;
     this._flatpickr = null;
 
+    this._mode = Mode.DEFAULT;
     this._currentType = event.type;
     this._currentCity = event.city;
     this._currentDescription = event.description;
@@ -225,6 +223,7 @@ export default class TripEdit extends AbstractSmartComponent {
       currentType: this._currentType,
       currentCity: this._currentCity,
       currentDescription: this._currentDescription,
+      mode: this._mode,
     });
   }
 
@@ -232,6 +231,12 @@ export default class TripEdit extends AbstractSmartComponent {
     const form = this.getElement();
     const formData = new FormData(form);
     return parseFormData(formData);
+  }
+
+  setMode(mode) {
+    this._mode = mode;
+
+    this.rerender();
   }
 
   removeElement() {
@@ -243,11 +248,11 @@ export default class TripEdit extends AbstractSmartComponent {
     super.removeElement();
   }
 
-  setFavoriteButtonHandler(handler) {
-    this.getElement().querySelector(`.event__favorite-btn`)
-      .addEventListener(`click`, handler);
-    this._favoriteButtonHandler = handler;
-  }
+  // setFavoriteButtonHandler(handler) {
+  //   this.getElement().querySelector(`.event__favorite-btn`)
+  //     .addEventListener(`click`, handler);
+  //  // this._favoriteButtonHandler = handler;
+  // }
 
   setCloseButtonClickHandler(handler) {
     this.getElement().querySelector(`.event__rollup-btn`)
@@ -268,7 +273,7 @@ export default class TripEdit extends AbstractSmartComponent {
 
   recoveryListeners() {
     this.setFormSubmitHandler(this._submitHandler);
-    this.setFavoriteButtonHandler(this._favoriteButtonHandler);
+    //this.setFavoriteButtonHandler(this._favoriteButtonHandler);
     this.setCloseButtonClickHandler(this._closeButtonHandler);
     this.setDeleteButtonClickHandler(this._deleteButtonHandler);
     this._subscribeOnEvents();
@@ -325,6 +330,14 @@ export default class TripEdit extends AbstractSmartComponent {
           this.rerender();
         }
       });
+
+    // element.querySelector(`.event__input--destination`)
+    //   .addEventListener(`input`, (evt) => {
+    //     if (evt.target.tagName === `INPUT`) {
+    //       evt.target.value = ``;
+    //       this.rerender();
+    //     }
+    //   });
 
     element.querySelector(`.event__input--destination`)
       .addEventListener(`change`, (evt) => {

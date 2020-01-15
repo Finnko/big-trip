@@ -1,4 +1,4 @@
-import {getRandomInRange, getRandomArrayItem, repeat, getRandomDate} from "../utils/common";
+import {getRandomInRange, getRandomArrayItem, repeat, getRandomDate, getTripTitle} from "../utils/common";
 import {eventOptions, EventTypes} from "../const";
 
 const EVENTS_COUNT = 1;
@@ -28,15 +28,7 @@ const generateOption = () => getRandomArrayItem(eventOptions);
 const generateEvent = () => {
   const eventType = getRandomArrayItem(Math.random() > 0.5 ? EventTypes.TRANSFER : EventTypes.ACTIVITY);
   const city = getRandomArrayItem(cities);
-  let delimiter = ``;
-
-  if (EventTypes.TRANSFER.includes(eventType)) {
-    delimiter = `to`;
-  } else {
-    delimiter = `in`;
-  }
-
-  const title = `${eventType} ${delimiter} ${city}`;
+  const title = getTripTitle(eventType, city);
 
   let startDate = getRandomDate();
   let endDate = getRandomDate();

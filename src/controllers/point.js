@@ -11,7 +11,7 @@ const Mode = {
 
 const emptyEvent = {
   id: String(Date.now() + Math.random()),
-  type: `bus`,
+  type: `Bus`,
   title: ``,
   city: ``,
   description: ``,
@@ -54,12 +54,6 @@ export default class PointController {
       this._replaceFormToEvent();
     });
 
-    this._tripEventEditComponent.setFavoriteButtonHandler(() => {
-      this._onDataChange(this, event, Object.assign({}, event, {
-        isFavorite: !event.isFavorite,
-      }));
-    });
-
     this._tripEventEditComponent.setFormSubmitHandler((evt) => {
       evt.preventDefault();
       const data = this._tripEventEditComponent.getData();
@@ -71,6 +65,14 @@ export default class PointController {
 
     switch (mode) {
       case Mode.DEFAULT:
+        this._tripEventEditComponent.setMode(mode);
+
+        // this._tripEventEditComponent.setFavoriteButtonHandler(() => {
+        //   this._onDataChange(this, event, Object.assign({}, event, {
+        //     isFavorite: !event.isFavorite,
+        //   }));
+        // });
+
         if (oldTripEventComponent && oldTripEventEditComponent) {
           replaceComponent(this._tripEventComponent, oldTripEventComponent);
           replaceComponent(this._tripEventEditComponent, oldTripEventEditComponent);
@@ -80,6 +82,8 @@ export default class PointController {
         }
         break;
       case Mode.ADDING:
+        this._tripEventEditComponent.setMode(mode);
+
         if (oldTripEventComponent && oldTripEventEditComponent) {
           removeElement(oldTripEventComponent);
           removeElement(oldTripEventEditComponent);
