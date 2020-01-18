@@ -6,12 +6,27 @@ import {parseDate, inputTagTimeFormatted, getTripTitle} from "../utils/common";
 import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
-const createImagesMarkup = (images) => {
+const createImages = (images) => {
   return images.map((image) => {
     return (
       `<img class="event__photo" src="${image}" alt="Event photo">`
     );
   }).join(`\n`);
+};
+
+const createImagesMarkup = (images) => {
+  if (images.length === 0) {
+    return ``;
+  }
+
+  return (
+    `<div class="event__photos-container">
+      <div class="event__photos-tape">
+        ${createImages(images)}
+      </div>
+    </div>
+    `
+  );
 };
 
 const createGroupTypesMarkup = (group, currentType) => {
@@ -48,6 +63,10 @@ const createTypesMarkup = (allTypes, currentType) => {
 };
 
 const createOffersMarkup = (allOffers, chosenOffers) => {
+  if (chosenOffers.length === 0) {
+    return ``;
+  }
+
   return allOffers.map((offer) => {
     const {name, type, price} = offer;
     const isChecked = Array.from(chosenOffers).some((chosenOffer) => chosenOffer.type === type);
@@ -82,9 +101,9 @@ const createEditEventTemplate = (event, options = {}) => {
   const {currentCity, currentDescription, currentType, mode} = options;
   const timeStartFormatted = inputTagTimeFormatted(dateStart);
   const timeEndFormatted = inputTagTimeFormatted(dateEnd);
-  const images = photos ? createImagesMarkup(photos) : ``;
+  const images = createImagesMarkup(photos);
   const types = createTypesMarkup(EventTypes, currentType);
-  const currentOffers = offers ? createOffersMarkup(eventOptions, offers) : ``;
+  const currentOffers = createOffersMarkup(eventOptions, offers);
 
   const destinationOptions = createDestinationsMarkup();
 
@@ -132,9 +151,8 @@ const createEditEventTemplate = (event, options = {}) => {
 
         <button class="event__reset-btn" type="reset">${mode === Mode.ADDING ? `Cancel` : `Delete`}</button>
 
-        ${mode === Mode.ADDING
-      ? ``
-      : `<input
+        ${mode === Mode.ADDING ? `<div class="visually-hidden">` : ``}
+          <input
             id="event-favorite-1"
             class="event__favorite-checkbox  visually-hidden"
             type="checkbox"
@@ -149,11 +167,11 @@ const createEditEventTemplate = (event, options = {}) => {
           </label>
           <button class="event__rollup-btn" type="button">
             <span class="visually-hidden">Open event</span>
-          </button>`
-    }
-
+          </button>
+          ${mode === Mode.ADDING ? `</div>` : ``}
       </header>
-      <section class="event__details">
+
+      <section class="event__details ${offers ? `visually-hidden` : ``}">
         <section class="event__section  event__section--offers">
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
@@ -162,15 +180,11 @@ const createEditEventTemplate = (event, options = {}) => {
           </div>
         </section>
 
-        <section class="event__section  event__section--destination">
+        <section class="event__section  event__section--destination ${currentDescription ? `visually-hidden` : ``}">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
           <p class="event__destination-description">${currentDescription}</p>
 
-          <div class="event__photos-container">
-            <div class="event__photos-tape">
-              ${images}
-            </div>
-          </div>
+          ${images}
         </section>
       </section>
     </form>`
@@ -248,11 +262,11 @@ export default class TripEdit extends AbstractSmartComponent {
     super.removeElement();
   }
 
-  // setFavoriteButtonHandler(handler) {
-  //   this.getElement().querySelector(`.event__favorite-btn`)
-  //     .addEventListener(`click`, handler);
-  //  // this._favoriteButtonHandler = handler;
-  // }
+  setFavoriteButtonHandler(handler) {
+    this.getElement().querySelector(`.event__favorite-btn`)
+      .addEventListener(`click`, handler);
+    this._favoriteButtonHandler = handler;
+  }
 
   setCloseButtonClickHandler(handler) {
     this.getElement().querySelector(`.event__rollup-btn`)
@@ -273,7 +287,7 @@ export default class TripEdit extends AbstractSmartComponent {
 
   recoveryListeners() {
     this.setFormSubmitHandler(this._submitHandler);
-    //this.setFavoriteButtonHandler(this._favoriteButtonHandler);
+    this.setFavoriteButtonHandler(this._favoriteButtonHandler);
     this.setCloseButtonClickHandler(this._closeButtonHandler);
     this.setDeleteButtonClickHandler(this._deleteButtonHandler);
     this._subscribeOnEvents();
@@ -330,14 +344,6 @@ export default class TripEdit extends AbstractSmartComponent {
           this.rerender();
         }
       });
-
-    // element.querySelector(`.event__input--destination`)
-    //   .addEventListener(`input`, (evt) => {
-    //     if (evt.target.tagName === `INPUT`) {
-    //       evt.target.value = ``;
-    //       this.rerender();
-    //     }
-    //   });
 
     element.querySelector(`.event__input--destination`)
       .addEventListener(`change`, (evt) => {

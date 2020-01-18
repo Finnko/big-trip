@@ -11,13 +11,13 @@ const siteHeaderElement = document.querySelector(`.page-header`);
 const siteMainElement = document.querySelector(`.page-main`);
 const controlElement = siteHeaderElement.querySelector(`.trip-controls`);
 const contentElement = siteMainElement.querySelector(`.page-body__container`);
+const createEventElement = siteHeaderElement.querySelector(`.trip-main__event-add-btn`);
 
 renderComponent(controlElement, new MenuComponent(), RenderPosition.BEFOREEND);
 
-document.querySelector(`.trip-main__event-add-btn`)
-  .addEventListener(`click`, () => {
-    tripController.createEvent();
-  });
+createEventElement.addEventListener(`click`, () => {
+  tripController.createEvent();
+});
 
 const eventsModel = new EventsModel();
 eventsModel.setEvents(eventsData);
