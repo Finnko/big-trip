@@ -22,9 +22,7 @@ const getRoute = (events) => {
     : cities.join(` &mdash; `);
 };
 
-const createTripInfoTemplate = (daysData) => {
-  const events = daysData.map((item) => item.events).flat();
-
+const createTripInfoTemplate = (events) => {
   const duration = getTripDuration(events);
   const total = getTotalTripPrice(events);
   const title = getRoute(events);
