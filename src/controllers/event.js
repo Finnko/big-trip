@@ -23,7 +23,7 @@ const emptyEvent = {
   offers: [],
 };
 
-export default class PointController {
+export default class EventController {
   constructor(container, onDataChange, onViewChange) {
     this._container = container;
     this._onDataChange = onDataChange;
@@ -50,6 +50,12 @@ export default class PointController {
       document.addEventListener(`keydown`, this._onEscKeyDown);
     });
 
+    this._tripEventEditComponent.setFavoriteButtonHandler(() => {
+      this._onDataChange(this, event, Object.assign({}, event, {
+        isFavorite: !event.isFavorite,
+      }));
+    });
+
     this._tripEventEditComponent.setCloseButtonClickHandler(() => {
       this._replaceFormToEvent();
     });
@@ -57,7 +63,7 @@ export default class PointController {
     this._tripEventEditComponent.setFormSubmitHandler((evt) => {
       evt.preventDefault();
       const data = this._tripEventEditComponent.getData();
-      console.log(`pointData`, data);
+      console.log(`EventData`, data);
       this._onDataChange(this, event, data);
     });
 
@@ -66,12 +72,6 @@ export default class PointController {
     switch (mode) {
       case Mode.DEFAULT:
         this._tripEventEditComponent.setMode(mode);
-
-        // this._tripEventEditComponent.setFavoriteButtonHandler(() => {
-        //   this._onDataChange(this, event, Object.assign({}, event, {
-        //     isFavorite: !event.isFavorite,
-        //   }));
-        // });
 
         if (oldTripEventComponent && oldTripEventEditComponent) {
           replaceComponent(this._tripEventComponent, oldTripEventComponent);

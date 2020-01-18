@@ -1,7 +1,7 @@
 import AbstractSmartComponent from "./abstract-smart-component";
 import {eventOptions, EventTypes} from "../const";
 import {destinations, eventsData} from "../mocks/event";
-import {Mode} from "../controllers/point";
+import {Mode} from "../controllers/event";
 import {parseDate, inputTagTimeFormatted, getTripTitle} from "../utils/common";
 import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';

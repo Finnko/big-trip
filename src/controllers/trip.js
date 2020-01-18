@@ -4,7 +4,7 @@ import NoEventsComponent from "../components/no-events";
 import TripDaysComponent from "../components/trip-days";
 import {renderComponent, RenderPosition} from "../utils/render";
 import TripInfoComponent from "../components/trip-info";
-import PointController, {Mode as EventControllerMode, emptyEvent} from "./point";
+import EventController, {Mode as EventControllerMode, emptyEvent} from "./event";
 
 const renderTripInfo = (days) => {
   const routeElement = document.querySelector(`.trip-info`);
@@ -12,7 +12,7 @@ const renderTripInfo = (days) => {
 };
 
 const renderEvents = (events, container, onDataChange, onViewChange, isSortedByDefault) => {
-  const pointControllers = [];
+  const eventControllers = [];
   let dates = isSortedByDefault
     ? Array.from(new Set(events.map((item) => new Date(item.dateStart).toDateString())))
     : [1];
@@ -26,22 +26,22 @@ const renderEvents = (events, container, onDataChange, onViewChange, isSortedByD
         return isSortedByDefault ? new Date(item.dateStart).toDateString() === date : item;
       })
       .forEach((item) => {
-        const pointController = new PointController(eventsListContainer, onDataChange, onViewChange);
-        pointController.render(item, EventControllerMode.DEFAULT);
-        pointControllers.push(pointController);
+        const eventController = new EventController(eventsListContainer, onDataChange, onViewChange);
+        eventController.render(item, EventControllerMode.DEFAULT);
+        eventControllers.push(eventController);
       });
 
     renderComponent(container, dayComponent, RenderPosition.BEFOREEND);
   });
 
-  return pointControllers;
+  return eventControllers;
 };
 
 export default class TripController {
   constructor(container, eventsModel) {
     this._container = container;
     this._eventsModel = eventsModel;
-    this._pointControllers = [];
+    this._eventControllers = [];
     this._creatingEvent = null;
 
     this._noEventsComponent = new NoEventsComponent();
@@ -79,7 +79,7 @@ export default class TripController {
     }
     const daysListElement = this._daysListComponent.getElement();
 
-    this._creatingEvent = new PointController(daysListElement, this._onDataChange, this._onViewChange);
+    this._creatingEvent = new EventController(daysListElement, this._onDataChange, this._onViewChange);
     this._creatingEvent.render(emptyEvent, EventControllerMode.ADDING);
   }
 
@@ -92,27 +92,27 @@ export default class TripController {
     const daysListElement = this._daysListComponent.getElement();
     daysListElement.innerHTML = ``;
 
-    this._pointControllers.forEach((pointController) => pointController.destroy());
-    this._pointControllers = [];
+    this._eventControllers.forEach((eventController) => eventController.destroy());
+    this._eventControllers = [];
   }
 
   _renderEvents(events, isSortedByDefault) {
     const daysListElement = this._daysListComponent.getElement();
 
-    this._pointControllers = renderEvents(events, daysListElement, this._onDataChange, this._onViewChange, isSortedByDefault);
+    this._eventControllers = renderEvents(events, daysListElement, this._onDataChange, this._onViewChange, isSortedByDefault);
   }
 
-  _onDataChange(pointController, oldData, newData) {
+  _onDataChange(eventController, oldData, newData) {
     console.log(`olddata`, oldData);
     console.log(`newdata`, newData);
     if (oldData === emptyEvent) {
       this._creatingEvent = null;
       if (newData === null) {
-        pointController.destroy();
+        eventController.destroy();
         this._updateEvents();
       } else {
         this._eventsModel.addEvent(newData);
-        pointController.render(newData, EventControllerMode.ADDING);
+        eventController.render(newData, EventControllerMode.ADDING);
 
         this._updateEvents();
       }
@@ -123,13 +123,13 @@ export default class TripController {
       const isSuccess = this._eventsModel.updateEvent(oldData.id, newData);
 
       if (isSuccess) {
-        pointController.render(newData, EventControllerMode.DEFAULT);
+        eventController.render(newData, EventControllerMode.DEFAULT);
       }
     }
   }
 
   _onViewChange() {
-    this._pointControllers.forEach((item) => item.setDefaultView());
+    this._eventControllers.forEach((item) => item.setDefaultView());
   }
 
   _onSortTypeChange(sortType) {

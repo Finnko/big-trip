@@ -2,7 +2,7 @@ import MenuComponent from "./components/menu";
 import TripBoardComponent from "./components/trip-board";
 import TripController from "./controllers/trip";
 import FilterController from "./controllers/filter";
-import EventsModel from "./models/point";
+import EventsModel from "./models/events";
 
 import {renderComponent, RenderPosition} from "./utils/render";
 import {eventsData} from "./mocks/event";
