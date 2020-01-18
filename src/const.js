@@ -46,4 +46,10 @@ const EventTypes = {
   ACTIVITY: [`Check-in`, `Restaurant`, `Sightseeing`],
 };
 
-export {eventOptions, EventTypes, monthNames};
+const FilterType = {
+  EVERYTHING: `everything`,
+  FUTURE: `future`,
+  PAST: `past`
+};
+
+export {eventOptions, EventTypes, monthNames, FilterType};
