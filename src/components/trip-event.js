@@ -34,7 +34,6 @@ const getPriceOptions = (offers) => {
 };
 
 const createTripEventTemplate = (event) => {
-
   const {type, title, price, dateStart, dateEnd, options} = event;
 
   const timeStart = formatTime(dateStart);

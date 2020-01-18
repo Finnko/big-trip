@@ -25,12 +25,21 @@ const generateOption = () => getRandomArrayItem(eventOptions);
 
 
 const generateEvent = (startDate, endDate) => {
-  const type = getRandomArrayItem(eventTypes);
+  const eventType = getRandomArrayItem(eventTypes);
   const city = getRandomArrayItem(cities);
-  const title = `${type} to ${city}`;
+  let delimiter;
+  switch (eventType.kind) {
+    case (`action`):
+      delimiter = `to`;
+      break;
+    case (`place`):
+      delimiter = `in`;
+      break;
+  }
+  const title = `${eventType.type} ${delimiter} ${city}`;
 
   return {
-    type,
+    type: eventType.type,
     title,
     city,
     description: repeat(getRandomInRange(DESC_MIN_NUMBER, DESC_MAX_NUMBER), generatePhrase),

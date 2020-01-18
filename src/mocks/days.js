@@ -6,19 +6,16 @@ const EVENTS_MAX = 4;
 
 const generateDay = () => {
   const targetDate = getRandomDate();
-  const startEvent = getRandomTime(targetDate);
-  const endEvent = getRandomTime(targetDate);
-  let dateStart = startEvent;
-  let dateEnd = endEvent;
-
-  if (startEvent.getTime() > endEvent.getTime()) {
-    [dateStart, dateEnd] = [endEvent, startEvent];
-  }
-
   let eventsData = [];
 
   for (let i = 1; i <= getRandomInRange(EVENTS_MIN, EVENTS_MAX); i++) {
-    eventsData.push(generateEvent(dateStart, dateEnd));
+    let startEvent = getRandomTime(targetDate);
+    let endEvent = getRandomTime(targetDate);
+
+    if (startEvent.getTime() > endEvent.getTime()) {
+      [startEvent, endEvent] = [endEvent, startEvent];
+    }
+    eventsData.push(generateEvent(startEvent, endEvent));
   }
 
   return {
