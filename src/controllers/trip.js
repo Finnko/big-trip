@@ -77,9 +77,11 @@ export default class TripController {
     if (this._creatingEvent) {
       return;
     }
+    this._onViewChange();
     const daysListElement = this._daysListComponent.getElement();
 
     this._creatingEvent = new EventController(daysListElement, this._onDataChange, this._onViewChange);
+    this._eventControllers = [this._creatingEvent, ...this._eventControllers];
     this._creatingEvent.render(emptyEvent, EventControllerMode.ADDING);
   }
 
@@ -103,8 +105,6 @@ export default class TripController {
   }
 
   _onDataChange(eventController, oldData, newData) {
-    console.log(`olddata`, oldData);
-    console.log(`newdata`, newData);
     if (oldData === emptyEvent) {
       this._creatingEvent = null;
       if (newData === null) {
@@ -113,7 +113,6 @@ export default class TripController {
       } else {
         this._eventsModel.addEvent(newData);
         eventController.render(newData, EventControllerMode.ADDING);
-
         this._updateEvents();
       }
     } else if (newData === null) {

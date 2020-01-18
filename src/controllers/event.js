@@ -63,7 +63,6 @@ export default class EventController {
     this._tripEventEditComponent.setFormSubmitHandler((evt) => {
       evt.preventDefault();
       const data = this._tripEventEditComponent.getData();
-      console.log(`EventData`, data);
       this._onDataChange(this, event, data);
     });
 

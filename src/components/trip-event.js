@@ -13,10 +13,6 @@ const createOffersMarkup = (offers) => {
   }).slice(0, 3).join(`\n`);
 };
 
-const getPriceOptions = (offers) => {
-  return (offers.size) ? Array.from(offers).reduce((accum, currentValue) => accum + currentValue.price, 0) : 0;
-};
-
 const createTripEventTemplate = (event) => {
   const {type, title, price, dateStart, dateEnd, offers} = event;
 
@@ -25,7 +21,6 @@ const createTripEventTemplate = (event) => {
   const timeEnd = castTimeFormat(dateEnd);
   const timeEndTagFormat = timeTagFormatted(dateEnd);
   const currentOffers = offers ? createOffersMarkup(Array.from(offers)) : ``;
-  //const priceWithOptions = price + getPriceOptions(offers);
 
   const duration = getEventDuration(dateStart, dateEnd);
 
