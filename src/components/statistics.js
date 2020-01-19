@@ -2,10 +2,13 @@ import AbstractSmartComponent from "./abstract-smart-component";
 import Chart from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import '../../node_modules/chart.js/dist/Chart.min.css';
+import {EventTypes} from "../const";
 
-const CHART_TEXT_COLOR = `#000000`;
-const CHART_TEXT_COLOR_INVERSE = `#ffffff`;
-const CHART_ACCENT_COLOR = `#72d8f9`;
+const ChartColors = {
+  CHART_TEXT_COLOR: `#000000`,
+  CHART_TEXT_COLOR_INVERSE: `#ffffff`,
+  CHART_ACCENT_COLOR: `#72d8f9`,
+};
 
 const ChartTitles = {
   MONEY: `MONEY`,
@@ -13,7 +16,7 @@ const ChartTitles = {
   TIME: `TIME SPENT`,
 };
 
-const renderChart = (ctx, data, labels, title) => {
+const renderChart = (ctx, data, labels, title, labelFormatter) => {
   return new Chart(ctx, {
     type: `horizontalBar`,
     plugins: [ChartDataLabels],
@@ -22,8 +25,10 @@ const renderChart = (ctx, data, labels, title) => {
       datasets: [
         {
           data,
-          backgroundColor: CHART_TEXT_COLOR_INVERSE,
-          hoverBackgroundColor: CHART_ACCENT_COLOR,
+          backgroundColor: ChartColors.CHART_TEXT_COLOR_INVERSE,
+          hoverBackgroundColor: ChartColors.CHART_ACCENT_COLOR,
+          barThickness: 30,
+          barPercentage: 1.0,
         },
       ],
     },
@@ -40,15 +45,16 @@ const renderChart = (ctx, data, labels, title) => {
 
       plugins: {
         datalabels: {
-          color: CHART_TEXT_COLOR,
+          color: ChartColors.CHART_TEXT_COLOR,
           font: {
             size: 15,
             weight: `bold`,
           },
           anchor: `end`,
           align: `left`,
-          offset: 15
-        }
+          offset: 15,
+          formatter: labelFormatter,
+        },
       },
 
       tooltips: {
@@ -80,13 +86,13 @@ const renderChart = (ctx, data, labels, title) => {
             display: true,
             fontSize: 20,
             fontStyle: `bold`,
-            fontColor: CHART_TEXT_COLOR,
+            fontColor: ChartColors.CHART_TEXT_COLOR,
           },
           ticks: {
             beginAtZero: true,
             padding: 10,
             fontSize: 15,
-            fontColor: CHART_TEXT_COLOR,
+            fontColor: ChartColors.CHART_TEXT_COLOR,
           },
           gridLines: {
             display: false,
@@ -118,14 +124,37 @@ const createStatisticsTemplate = () => {
   );
 };
 
+const getTransportData = (eventsData) => {
+  const typesMap = {};
+
+  eventsData
+    .filter((item) => EventTypes.TRANSFER.includes(item.type))
+    .forEach((item) => {
+      const type = item.type;
+
+      if (!typesMap[type]) {
+        typesMap[type] = 0;
+      }
+
+      typesMap[type] += 1;
+    });
+
+  const labels = Object.keys(typesMap);
+  const data = Object.values(typesMap);
+
+  return {data, labels};
+};
+
+
 export default class StatisticsComponent extends AbstractSmartComponent {
-  constructor({eventsData}) {
+  constructor(events) {
     super();
 
-    this._events = eventsData;
+    this._events = events;
     this._moneyChart = null;
     this._transportChart = null;
     this._timeSpentChart = null;
+    console.log(this._events);
 
     this._renderCharts();
   }
@@ -158,8 +187,17 @@ export default class StatisticsComponent extends AbstractSmartComponent {
 
     this._resetCharts();
 
+    const transportChartData = getTransportData(this._events.getEvents());
+
     this._moneyChart = renderChart(moneyCtx, [20, 30, 40, 50, 60], [`Sightseeing`, `Sightseeing`, `transport`, `transport`, `restaraunt`], ChartTitles.MONEY);
-    this._transportChart = renderChart(transportCtx, [20, 30, 40, 50, 60], [`Sightseeing`, `Sightseeing`, `transport`, `transport`, `transport`], ChartTitles.TRANSPORT);
+
+    this._transportChart = renderChart(
+        transportCtx,
+        transportChartData.data,
+        transportChartData.labels,
+        ChartTitles.TRANSPORT,
+        (value) => `x${value}`);
+
     this._timeSpentChart = renderChart(timeCtx, [20, 30, 40, 50, 60], [`Sightseeing`, `transport`, `transport`, `transport`, `transport`], ChartTitles.TIME);
   }
 

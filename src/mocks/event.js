@@ -1,7 +1,7 @@
 import {getRandomInRange, getRandomArrayItem, repeat, getRandomDate, getTripTitle} from "../utils/common";
 import {eventOptions, EventTypes} from "../const";
 
-const EVENTS_COUNT = 2;
+const EVENTS_COUNT = 5;
 
 const PHOTOS_MIN_PER_CARD = 3;
 const PHOTOS_MAX_PER_CARD = 6;
@@ -55,5 +55,7 @@ const generateEvent = () => {
 const eventsData = repeat(EVENTS_COUNT, generateEvent).sort((a, b) => a.dateStart - b.dateStart);
 
 const destinations = new Set(eventsData.map(({city}) => city));
+
+console.log(eventsData);
 
 export {eventsData, destinations};
