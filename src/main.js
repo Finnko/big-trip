@@ -18,7 +18,7 @@ const createEventElement = siteHeaderElement.querySelector(`.trip-main__event-ad
 const eventsModel = new EventsModel();
 
 const menuComponent = new MenuComponent(menuItems);
-const statisticsComponent = new StatisticsComponent();
+const statisticsComponent = new StatisticsComponent(eventsModel);
 const boardComponent = new TripBoardComponent();
 
 const filterController = new FilterController(controlElement, eventsModel);
@@ -49,5 +49,6 @@ renderComponent(controlElement, menuComponent, RenderPosition.BEFOREEND);
 renderComponent(contentElement, boardComponent, RenderPosition.BEFOREEND);
 renderComponent(contentElement, statisticsComponent, RenderPosition.BEFOREEND);
 
+statisticsComponent.hide();
 filterController.render();
 tripController.render();

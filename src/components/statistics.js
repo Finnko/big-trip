@@ -6,12 +6,29 @@ import '../../node_modules/chart.js/dist/Chart.min.css';
 const CHART_TEXT_COLOR = `#000000`;
 const CHART_TEXT_COLOR_INVERSE = `#ffffff`;
 
-const renderChart = (ctx, data, options) => {
+const renderChart = (ctx, data) => {
   return new Chart(ctx, {
     type: `horizontalBar`,
     plugins: [ChartDataLabels],
     data,
-    options
+    options: {
+      layout: {
+        padding: {
+          left: 70,
+          right: 0,
+          top: 0,
+          bottom: 0
+        }
+      },
+
+      tooltips: {
+        enabled: false
+      },
+
+      legend: {
+        display: false
+      },
+    }
   });
 };
 
@@ -36,11 +53,60 @@ const createStatisticsTemplate = () => {
 };
 
 export default class StatisticsComponent extends AbstractSmartComponent {
-  constructor() {
+  constructor({eventsData}) {
     super();
+
+    this._events = eventsData;
+    this._moneyChart = null;
+
+    this._renderCharts();
   }
 
   getTemplate() {
     return createStatisticsTemplate();
+  }
+
+  show() {
+    super.show();
+
+    this.rerender(this._events);
+  }
+
+  rerender() {
+    super.rerender();
+
+    this._renderCharts();
+  }
+
+  recoveryListeners() {}
+
+  _renderCharts() {
+    const element = this.getElement();
+
+    const moneyCtx = element.querySelector(`.statistics__chart--money`);
+    // const tagsCtx = element.querySelector(`.statistic__tags`);
+    // const colorsCtx = element.querySelector(`.statistic__colors`);
+
+    this._resetCharts();
+
+    this._moneyChart = renderChart(moneyCtx, [20,30,40,50,60]);
+  }
+
+
+  _resetCharts() {
+    if (this._moneyChart) {
+      this._moneyChart.destroy();
+      this._moneyChart = null;
+    }
+
+    // if (this._tagsChart) {
+    //   this._tagsChart.destroy();
+    //   this._tagsChart = null;
+    // }
+    //
+    // if (this._colorsChart) {
+    //   this._colorsChart.destroy();
+    //   this._colorsChart = null;
+    // }
   }
 }
