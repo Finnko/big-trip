@@ -3,6 +3,7 @@ import Chart from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import '../../node_modules/chart.js/dist/Chart.min.css';
 import {EventTypes} from "../const";
+import {getDatesHoursDiff} from "../utils/common";
 
 const ChartColors = {
   CHART_TEXT_COLOR: `#000000`,
@@ -29,6 +30,7 @@ const renderChart = (ctx, data, labels, title, labelFormatter) => {
           hoverBackgroundColor: ChartColors.CHART_ACCENT_COLOR,
           barThickness: 30,
           barPercentage: 1.0,
+          minBarLength: 50
         },
       ],
     },
@@ -52,7 +54,7 @@ const renderChart = (ctx, data, labels, title, labelFormatter) => {
           },
           anchor: `end`,
           align: `left`,
-          offset: 15,
+          offset: 10,
           formatter: labelFormatter,
         },
       },
@@ -127,18 +129,13 @@ const createStatisticsTemplate = () => {
 const getMoneyData = (eventsData) => {
   const moneyMap = {};
 
-  eventsData
-    .filter((item) => EventTypes.TRANSFER.includes(item.type))
-    .forEach((item) => {
-      const type = item.type;
-      const cost = item.price;
+  eventsData.forEach((item) => {
+    if (!moneyMap[item.type]) {
+      moneyMap[item.type] = 0;
+    }
 
-      if (!moneyMap[type]) {
-        moneyMap[type] = 0;
-      }
-
-      moneyMap[type] += cost;
-    });
+    moneyMap[item.type] += item.price;
+  });
 
   const labels = Object.keys(moneyMap);
   const data = Object.values(moneyMap);
@@ -152,17 +149,33 @@ const getTransportData = (eventsData) => {
   eventsData
     .filter((item) => EventTypes.TRANSFER.includes(item.type))
     .forEach((item) => {
-      const type = item.type;
-
-      if (!typesMap[type]) {
-        typesMap[type] = 0;
+      if (!typesMap[item.type]) {
+        typesMap[item.type] = 0;
       }
 
-      typesMap[type] += 1;
+      typesMap[item.type] += 1;
     });
 
   const labels = Object.keys(typesMap);
   const data = Object.values(typesMap);
+
+  return {data, labels};
+};
+
+const getTimeSpentData = (eventsData) => {
+  const timeSpentMap = {};
+
+  eventsData
+    .forEach((item) => {
+      if (!timeSpentMap[item.title]) {
+        timeSpentMap[item.title] = 0;
+      }
+
+      timeSpentMap[item.title] += getDatesHoursDiff(item.dateStart, item.dateEnd);
+    });
+
+  const labels = Object.keys(timeSpentMap);
+  const data = Object.values(timeSpentMap);
 
   return {data, labels};
 };
@@ -209,6 +222,7 @@ export default class StatisticsComponent extends AbstractSmartComponent {
 
     const moneyChartData = getMoneyData(this._events.getEvents());
     const transportChartData = getTransportData(this._events.getEvents());
+    const timeSpentChartData = getTimeSpentData(this._events.getEvents());
 
     this._moneyChart = renderChart(
         moneyCtx,
@@ -224,7 +238,12 @@ export default class StatisticsComponent extends AbstractSmartComponent {
         ChartTitles.TRANSPORT,
         (value) => `x${value}`);
 
-    this._timeSpentChart = renderChart(timeCtx, [20, 30, 40, 50, 60], [`Sightseeing`, `transport`, `transport`, `transport`, `transport`], ChartTitles.TIME);
+    this._timeSpentChart = renderChart(
+        timeCtx,
+        timeSpentChartData.data,
+        timeSpentChartData.labels,
+        ChartTitles.TIME,
+        (value) => `${value} H`);
   }
 
   _resetCharts() {

@@ -56,6 +56,4 @@ const eventsData = repeat(EVENTS_COUNT, generateEvent).sort((a, b) => a.dateStar
 
 const destinations = new Set(eventsData.map(({city}) => city));
 
-console.log(eventsData);
-
 export {eventsData, destinations};
