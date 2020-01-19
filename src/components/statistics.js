@@ -124,6 +124,28 @@ const createStatisticsTemplate = () => {
   );
 };
 
+const getMoneyData = (eventsData) => {
+  const moneyMap = {};
+
+  eventsData
+    .filter((item) => EventTypes.TRANSFER.includes(item.type))
+    .forEach((item) => {
+      const type = item.type;
+      const cost = item.price;
+
+      if (!moneyMap[type]) {
+        moneyMap[type] = 0;
+      }
+
+      moneyMap[type] += cost;
+    });
+
+  const labels = Object.keys(moneyMap);
+  const data = Object.values(moneyMap);
+
+  return {data, labels};
+};
+
 const getTransportData = (eventsData) => {
   const typesMap = {};
 
@@ -145,7 +167,6 @@ const getTransportData = (eventsData) => {
   return {data, labels};
 };
 
-
 export default class StatisticsComponent extends AbstractSmartComponent {
   constructor(events) {
     super();
@@ -154,7 +175,6 @@ export default class StatisticsComponent extends AbstractSmartComponent {
     this._moneyChart = null;
     this._transportChart = null;
     this._timeSpentChart = null;
-    console.log(this._events);
 
     this._renderCharts();
   }
@@ -187,9 +207,15 @@ export default class StatisticsComponent extends AbstractSmartComponent {
 
     this._resetCharts();
 
+    const moneyChartData = getMoneyData(this._events.getEvents());
     const transportChartData = getTransportData(this._events.getEvents());
 
-    this._moneyChart = renderChart(moneyCtx, [20, 30, 40, 50, 60], [`Sightseeing`, `Sightseeing`, `transport`, `transport`, `restaraunt`], ChartTitles.MONEY);
+    this._moneyChart = renderChart(
+        moneyCtx,
+        moneyChartData.data,
+        moneyChartData.labels,
+        ChartTitles.MONEY,
+        (value) => `€ ${value}`);
 
     this._transportChart = renderChart(
         transportCtx,
