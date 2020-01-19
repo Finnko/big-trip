@@ -7,6 +7,12 @@ const CHART_TEXT_COLOR = `#000000`;
 const CHART_TEXT_COLOR_INVERSE = `#ffffff`;
 const CHART_ACCENT_COLOR = `#72d8f9`;
 
+const ChartTitles = {
+  MONEY: `MONEY`,
+  TRANSPORT: `TRANSPORT`,
+  TIME: `TIME SPENT`,
+};
+
 const renderChart = (ctx, data, labels, title) => {
   return new Chart(ctx, {
     type: `horizontalBar`,
@@ -18,8 +24,8 @@ const renderChart = (ctx, data, labels, title) => {
           data,
           backgroundColor: CHART_TEXT_COLOR_INVERSE,
           hoverBackgroundColor: CHART_ACCENT_COLOR,
-        }
-      ]
+        },
+      ],
     },
     options: {
       responsive: false,
@@ -28,17 +34,31 @@ const renderChart = (ctx, data, labels, title) => {
           left: 60,
           right: 0,
           top: 0,
-          bottom: 0
+          bottom: 0,
+        },
+      },
+
+      plugins: {
+        datalabels: {
+          color: CHART_TEXT_COLOR,
+          font: {
+            size: 15,
+            weight: `bold`,
+          },
+          anchor: `end`,
+          align: `left`,
+          offset: 15
         }
       },
 
       tooltips: {
-        enabled: false
+        enabled: false,
       },
 
       legend: {
-        display: false
+        display: false,
       },
+
       scales: {
         xAxes: [{
           ticks: {
@@ -47,35 +67,34 @@ const renderChart = (ctx, data, labels, title) => {
           },
           gridLines: {
             display: false,
-            drawBorder: false
-          }
+            drawBorder: false,
+          },
         }],
 
         yAxes: [{
           scaleLabel: {
             padding: {
-              bottom: 10
+              bottom: 10,
             },
             labelString: title,
             display: true,
             fontSize: 20,
             fontStyle: `bold`,
-            fontColor: CHART_TEXT_COLOR
+            fontColor: CHART_TEXT_COLOR,
           },
-
           ticks: {
             beginAtZero: true,
-            padding: 20,
+            padding: 10,
             fontSize: 15,
             fontColor: CHART_TEXT_COLOR,
           },
           gridLines: {
             display: false,
-            drawBorder: false
-          }
-        }]
-      }
-    }
+            drawBorder: false,
+          },
+        }],
+      },
+    },
   });
 };
 
@@ -127,7 +146,8 @@ export default class StatisticsComponent extends AbstractSmartComponent {
     this._renderCharts();
   }
 
-  recoveryListeners() {}
+  recoveryListeners() {
+  }
 
   _renderCharts() {
     const element = this.getElement();
@@ -138,11 +158,10 @@ export default class StatisticsComponent extends AbstractSmartComponent {
 
     this._resetCharts();
 
-    this._moneyChart = renderChart(moneyCtx, [20,30,40,50,60], [`Sightseeing`, `Sightseeing`, `transport`, `transport`, `restaraunt`], `MONEY`);
-    this._transportChart = renderChart(transportCtx, [20,30,40,50,60], [`Sightseeing`, `Sightseeing`, `transport`, `transport`, `transport`], `TRANSPORT`);
-    this._timeSpentChart = renderChart(timeCtx, [20,30,40,50, 60], [`Sightseeing`, `transport`, `transport`, `transport`, `transport`], `TIME SPENT`);
+    this._moneyChart = renderChart(moneyCtx, [20, 30, 40, 50, 60], [`Sightseeing`, `Sightseeing`, `transport`, `transport`, `restaraunt`], ChartTitles.MONEY);
+    this._transportChart = renderChart(transportCtx, [20, 30, 40, 50, 60], [`Sightseeing`, `Sightseeing`, `transport`, `transport`, `transport`], ChartTitles.TRANSPORT);
+    this._timeSpentChart = renderChart(timeCtx, [20, 30, 40, 50, 60], [`Sightseeing`, `transport`, `transport`, `transport`, `transport`], ChartTitles.TIME);
   }
-
 
   _resetCharts() {
     if (this._moneyChart) {
