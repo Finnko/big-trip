@@ -1,4 +1,19 @@
 import AbstractSmartComponent from "./abstract-smart-component";
+import Chart from "chart.js";
+import ChartDataLabels from "chartjs-plugin-datalabels";
+import '../../node_modules/chart.js/dist/Chart.min.css';
+
+const CHART_TEXT_COLOR = `#000000`;
+const CHART_TEXT_COLOR_INVERSE = `#ffffff`;
+
+const renderChart = (ctx, data, options) => {
+  return new Chart(ctx, {
+    type: `horizontalBar`,
+    plugins: [ChartDataLabels],
+    data,
+    options
+  });
+};
 
 const createStatisticsTemplate = () => {
   return (
