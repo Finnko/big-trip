@@ -5,16 +5,27 @@ import '../../node_modules/chart.js/dist/Chart.min.css';
 
 const CHART_TEXT_COLOR = `#000000`;
 const CHART_TEXT_COLOR_INVERSE = `#ffffff`;
+const CHART_ACCENT_COLOR = `#72d8f9`;
 
-const renderChart = (ctx, data) => {
+const renderChart = (ctx, data, labels, title) => {
   return new Chart(ctx, {
     type: `horizontalBar`,
     plugins: [ChartDataLabels],
-    data,
+    data: {
+      labels,
+      datasets: [
+        {
+          data,
+          backgroundColor: CHART_TEXT_COLOR_INVERSE,
+          hoverBackgroundColor: CHART_ACCENT_COLOR,
+        }
+      ]
+    },
     options: {
+      responsive: false,
       layout: {
         padding: {
-          left: 70,
+          left: 60,
           right: 0,
           top: 0,
           bottom: 0
@@ -28,6 +39,42 @@ const renderChart = (ctx, data) => {
       legend: {
         display: false
       },
+      scales: {
+        xAxes: [{
+          ticks: {
+            display: false,
+            beginAtZero: true,
+          },
+          gridLines: {
+            display: false,
+            drawBorder: false
+          }
+        }],
+
+        yAxes: [{
+          scaleLabel: {
+            padding: {
+              bottom: 10
+            },
+            labelString: title,
+            display: true,
+            fontSize: 20,
+            fontStyle: `bold`,
+            fontColor: CHART_TEXT_COLOR
+          },
+
+          ticks: {
+            beginAtZero: true,
+            padding: 20,
+            fontSize: 15,
+            fontColor: CHART_TEXT_COLOR,
+          },
+          gridLines: {
+            display: false,
+            drawBorder: false
+          }
+        }]
+      }
     }
   });
 };
@@ -58,6 +105,8 @@ export default class StatisticsComponent extends AbstractSmartComponent {
 
     this._events = eventsData;
     this._moneyChart = null;
+    this._transportChart = null;
+    this._timeSpentChart = null;
 
     this._renderCharts();
   }
@@ -84,12 +133,14 @@ export default class StatisticsComponent extends AbstractSmartComponent {
     const element = this.getElement();
 
     const moneyCtx = element.querySelector(`.statistics__chart--money`);
-    // const tagsCtx = element.querySelector(`.statistic__tags`);
-    // const colorsCtx = element.querySelector(`.statistic__colors`);
+    const transportCtx = element.querySelector(`.statistics__chart--transport`);
+    const timeCtx = element.querySelector(`.statistics__chart--time`);
 
     this._resetCharts();
 
-    this._moneyChart = renderChart(moneyCtx, [20,30,40,50,60]);
+    this._moneyChart = renderChart(moneyCtx, [20,30,40,50,60], [`Sightseeing`, `Sightseeing`, `transport`, `transport`, `restaraunt`], `MONEY`);
+    this._transportChart = renderChart(transportCtx, [20,30,40,50,60], [`Sightseeing`, `Sightseeing`, `transport`, `transport`, `transport`], `TRANSPORT`);
+    this._timeSpentChart = renderChart(timeCtx, [20,30,40,50, 60], [`Sightseeing`, `transport`, `transport`, `transport`, `transport`], `TIME SPENT`);
   }
 
 
@@ -99,14 +150,14 @@ export default class StatisticsComponent extends AbstractSmartComponent {
       this._moneyChart = null;
     }
 
-    // if (this._tagsChart) {
-    //   this._tagsChart.destroy();
-    //   this._tagsChart = null;
-    // }
-    //
-    // if (this._colorsChart) {
-    //   this._colorsChart.destroy();
-    //   this._colorsChart = null;
-    // }
+    if (this._transportChart) {
+      this._transportChart.destroy();
+      this._transportChart = null;
+    }
+
+    if (this._timeSpentChart) {
+      this._timeSpentChart.destroy();
+      this._timeSpentChart = null;
+    }
   }
 }
