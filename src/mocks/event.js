@@ -55,7 +55,7 @@ const generateEvent = () => {
     dateEnd: endDate,
     price: getRandomInRange(PRICE_MIN, PRICE_MAX),
     isFavorite: Math.random() > 0.5,
-    options: new Set(repeat(getRandomInRange(OFFERS_MIN_NUMBER, OFFERS_MAX_NUMBER), generateOption)),
+    offers: new Set(repeat(getRandomInRange(OFFERS_MIN_NUMBER, OFFERS_MAX_NUMBER), generateOption)),
   };
 };
 
