@@ -1,20 +1,33 @@
-import {getFilterItems} from "../mocks/filter";
 import AbstractComponent from "./abstract-component";
 
-const createFilterMarkup = (filters) => {
-  return filters.map((filter) => {
-    const isChecked = filter.isChecked ? `checked` : ``;
-    return (`
-      <div class="trip-filters__filter">
-        <input id="filter-${filter.title}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="${filter.title}" ${isChecked}>
-        <label class="trip-filters__filter-label" for="filter-${filter.title}">${filter.title}</label>
-      </div>
-    `);
-  }).join(`\n`);
+const FILTER_ID_PREFIX = `filter-`;
+
+const getFilterNameById = (id) => {
+  return id.substring(FILTER_ID_PREFIX.length);
 };
 
-const createFilterTemplate = () => {
-  const filterItems = createFilterMarkup(getFilterItems());
+const createFilterMarkup = (filter, isChecked) => {
+  const {title} = filter;
+
+  return (
+    `<div class="trip-filters__filter">
+      <input
+        id="filter-${title}"
+        class="trip-filters__filter-input  visually-hidden"
+        type="radio"
+        name="trip-filter"
+        value="${title}"
+        ${isChecked ? `checked` : ``}
+      >
+      <label class="trip-filters__filter-label" for="filter-${title}">
+        ${title}
+      </label>
+    </div>`
+  );
+};
+
+const createFilterTemplate = (filters) => {
+  const filterItems = filters.map((item) => createFilterMarkup(item, item.checked)).join(`\n`);
 
   return (
     `<form class="trip-filters" action="#" method="get">
@@ -25,7 +38,20 @@ const createFilterTemplate = () => {
 };
 
 export default class Filter extends AbstractComponent {
+  constructor(filters) {
+    super();
+
+    this._filters = filters;
+  }
+
   getTemplate() {
-    return createFilterTemplate();
+    return createFilterTemplate(this._filters);
+  }
+
+  setFilterChangeHandler(handler) {
+    this.getElement().addEventListener(`change`, (evt) => {
+      const filterName = getFilterNameById(evt.target.id);
+      handler(filterName);
+    });
   }
 }

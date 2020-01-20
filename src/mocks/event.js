@@ -1,7 +1,7 @@
-import {getRandomInRange, getRandomArrayItem, repeat, getRandomDate} from "../utils/common";
+import {getRandomInRange, getRandomArrayItem, repeat, getRandomDate, getTripTitle} from "../utils/common";
 import {eventOptions, EventTypes} from "../const";
 
-const EVENTS_COUNT = 10;
+const EVENTS_COUNT = 1;
 
 const PHOTOS_MIN_PER_CARD = 3;
 const PHOTOS_MAX_PER_CARD = 6;
@@ -28,15 +28,7 @@ const generateOption = () => getRandomArrayItem(eventOptions);
 const generateEvent = () => {
   const eventType = getRandomArrayItem(Math.random() > 0.5 ? EventTypes.TRANSFER : EventTypes.ACTIVITY);
   const city = getRandomArrayItem(cities);
-  let delimiter = ``;
-
-  if (EventTypes.TRANSFER.includes(eventType)) {
-    delimiter = `to`;
-  } else {
-    delimiter = `in`;
-  }
-
-  const title = `${eventType} ${delimiter} ${city}`;
+  const title = getTripTitle(eventType, city);
 
   let startDate = getRandomDate();
   let endDate = getRandomDate();
@@ -46,6 +38,7 @@ const generateEvent = () => {
   }
 
   return {
+    id: String(new Date() + Math.random()),
     type: eventType,
     title,
     city,
