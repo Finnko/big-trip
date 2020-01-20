@@ -28,7 +28,7 @@ const generateOption = () => getRandomArrayItem(eventOptions);
 const generateEvent = () => {
   const eventType = getRandomArrayItem(Math.random() > 0.5 ? EventTypes.TRANSFER : EventTypes.ACTIVITY);
   const city = getRandomArrayItem(cities);
-  const title = getTripTitle(eventType, city);
+
 
   let startDate = getRandomDate();
   let endDate = getRandomDate();

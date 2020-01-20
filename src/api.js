@@ -18,7 +18,7 @@ export default class API {
 
   getEvents() {
     return this._load({url: `points`})
-      .then((response) => response.json)
+      .then((response) => response.json())
       .then(EventModel.parseEvents);
   }
 

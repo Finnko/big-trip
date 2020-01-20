@@ -2,8 +2,8 @@ import {monthNames} from "../const";
 import AbstractComponent from "./abstract-component";
 
 const getTripDuration = (events) => {
-  const dateStart = events[0].dateStart;
-  const dateEnd = events[events.length - 1].dateEnd;
+  const dateStart = new Date(events[0].dateStart);
+  const dateEnd = new Date(events[events.length - 1].dateEnd);
 
   return dateStart.getMonth() === dateEnd.getMonth()
     ? `${monthNames[dateStart.getMonth()]} ${dateStart.getDate()} &mdash; ${dateEnd.getDate()}`

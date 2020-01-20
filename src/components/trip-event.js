@@ -1,11 +1,11 @@
-import {timeTagFormatted, castTimeFormat, getEventDuration} from "../utils/common";
+import {timeTagFormatted, castTimeFormat, getEventDuration, getTripTitle} from "../utils/common";
 import AbstractComponent from "./abstract-component";
 
 const createOffersMarkup = (offers) => {
   return offers.map((offer) => {
     return (
       `<li class="event__offer">
-      <span class="event__offer-title">${offer.name}</span>
+      <span class="event__offer-title">${offer.title}</span>
         &plus;
        &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
   </li>`
@@ -14,13 +14,14 @@ const createOffersMarkup = (offers) => {
 };
 
 const createTripEventTemplate = (event) => {
-  const {type, title, price, dateStart, dateEnd, offers} = event;
+  const {type, price, dateStart, dateEnd, offers, city} = event;
 
   const timeStart = castTimeFormat(dateStart);
   const timeStartTagFormat = timeTagFormatted(dateStart);
   const timeEnd = castTimeFormat(dateEnd);
   const timeEndTagFormat = timeTagFormatted(dateEnd);
-  const currentOffers = offers ? createOffersMarkup(Array.from(offers)) : ``;
+  const currentOffers = offers.length ? createOffersMarkup(offers) : ``;
+  const title = getTripTitle(type, city);
 
   const duration = getEventDuration(dateStart, dateEnd);
 

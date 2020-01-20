@@ -59,7 +59,7 @@ const menuItems = [
 
 const EventTypes = {
   TRANSFER: [`Bus`, `Drive`, `Flight`, `Ship`, `Taxi`, `Train`, `Transport`, `Trip`],
-  ACTIVITY: [`Check-in`, `Restaurant`, `Sightseeing`],
+  ACTIVITY: [`check-in`, `restaurant`, `sightseeing`],
 };
 
 const FilterType = {

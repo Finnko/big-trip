@@ -9,15 +9,16 @@ import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 const createImages = (images) => {
   return images.map((image) => {
     return (
-      `<img class="event__photo" src="${image}" alt="Event photo">`
+      `<img class="event__photo" src="${image.src}" alt="Event photo">`
     );
   }).join(`\n`);
 };
 
 const createImagesMarkup = (images) => {
-  if (images.length === 0) {
-    return ``;
-  }
+  // if (images.length === 0) {
+  //   //   return ``;
+  //   // }
+  console.log(images);
 
   return (
     `<div class="event__photos-container">
@@ -97,7 +98,7 @@ const createDestinationsMarkup = () => {
 };
 
 const createEditEventTemplate = (event, options = {}) => {
-  const {photos, dateStart, dateEnd, offers, isFavorite, price} = event;
+  const {dateStart, dateEnd, offers, isFavorite, price, photos} = event;
   const {currentCity, currentDescription, currentType, mode} = options;
   const timeStartFormatted = inputTagTimeFormatted(dateStart);
   const timeEndFormatted = inputTagTimeFormatted(dateEnd);

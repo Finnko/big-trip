@@ -34,7 +34,8 @@ export default class EventModel {
   }
 
   static parseEvents(data) {
-    return data.map(EventModel.parseTask);
+    console.log(data);
+    return data.map((item) => EventModel.parseEvent(item));
   }
 
   static clone(data) {
