@@ -134,7 +134,7 @@ const getMoneyData = (eventsData) => {
       moneyMap[item.type] = 0;
     }
 
-    moneyMap[item.type] += item.price;
+    moneyMap[item.type] += +item.price;
   });
 
   const labels = Object.keys(moneyMap);
