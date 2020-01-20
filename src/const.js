@@ -68,4 +68,17 @@ const FilterType = {
   PAST: `past`,
 };
 
-export {eventOptions, EventTypes, monthNames, FilterType, menuItems, MenuTitles};
+const Method = {
+  GET: `GET`,
+  POST: `POST`,
+  PUT: `PUT`,
+  DELETE: `DELETE`,
+};
+
+const END_POINT = `https://htmlacademy-es-10.appspot.com/big-trip`;
+const AUTHORIZATION = `Basic gnr59199ik29889a`;
+
+export {
+  eventOptions, EventTypes, monthNames, FilterType, menuItems,
+  MenuTitles, Method, END_POINT, AUTHORIZATION
+};

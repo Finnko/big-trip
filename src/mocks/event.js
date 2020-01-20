@@ -40,7 +40,6 @@ const generateEvent = () => {
   return {
     id: String(new Date() + Math.random()),
     type: eventType,
-    title,
     city,
     description: repeat(getRandomInRange(DESC_MIN_NUMBER, DESC_MAX_NUMBER), generatePhrase),
     photos: repeat(getRandomInRange(PHOTOS_MIN_PER_CARD, PHOTOS_MAX_PER_CARD), generatePhoto),
