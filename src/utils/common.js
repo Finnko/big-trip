@@ -15,7 +15,7 @@ const getRandomDate = () => {
   const targetDate = new Date();
 
   const sign = Math.random() > 0.5 ? 1 : -1;
-  const diffValue = sign * getRandomInRange(0, 3);
+  const diffValue = sign * getRandomInRange(0, 2);
   const hours = getRandomInRange(0, 23);
   const minutes = getRandomInRange(0, 59);
 
@@ -59,6 +59,12 @@ const repeat = (count, fn) => {
   return Array(count).fill(``).map(fn);
 };
 
+const getDatesHoursDiff = (dateA, dateB) => {
+  const a = moment(dateA);
+  const b = moment(dateB);
+  return b.diff(a, `hours`);
+};
+
 const getEventDuration = (dateA, dateB) => {
   const a = moment(dateA);
   const b = moment(dateB);
@@ -85,5 +91,5 @@ const isOneDay = (dateA, dateB) => {
 
 export {
   getRandomInRange, getRandomArrayItem, getRandomDate, getTripTitle, repeat, getEventDuration, parseDate,
-  timeTagFormatted, castDurationFormat, castTimeFormat, inputTagTimeFormatted, isOneDay
+  timeTagFormatted, castDurationFormat, castTimeFormat, inputTagTimeFormatted, isOneDay, getDatesHoursDiff
 };

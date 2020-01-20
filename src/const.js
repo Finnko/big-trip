@@ -41,6 +41,22 @@ const monthNames = [
   `Dec`,
 ];
 
+const MenuTitles = {
+  TABLE: `Table`,
+  STATS: `Stats`,
+};
+
+const menuItems = [
+  {
+    title: `Table`,
+    isActive: true,
+  },
+  {
+    title: `Stats`,
+    isActive: false,
+  },
+];
+
 const EventTypes = {
   TRANSFER: [`Bus`, `Drive`, `Flight`, `Ship`, `Taxi`, `Train`, `Transport`, `Trip`],
   ACTIVITY: [`Check-in`, `Restaurant`, `Sightseeing`],
@@ -49,7 +65,7 @@ const EventTypes = {
 const FilterType = {
   EVERYTHING: `everything`,
   FUTURE: `future`,
-  PAST: `past`
+  PAST: `past`,
 };
 
-export {eventOptions, EventTypes, monthNames, FilterType};
+export {eventOptions, EventTypes, monthNames, FilterType, menuItems, MenuTitles};

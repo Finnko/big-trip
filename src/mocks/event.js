@@ -1,7 +1,7 @@
 import {getRandomInRange, getRandomArrayItem, repeat, getRandomDate, getTripTitle} from "../utils/common";
 import {eventOptions, EventTypes} from "../const";
 
-const EVENTS_COUNT = 1;
+const EVENTS_COUNT = 10;
 
 const PHOTOS_MIN_PER_CARD = 3;
 const PHOTOS_MAX_PER_CARD = 6;
