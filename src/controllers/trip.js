@@ -85,6 +85,14 @@ export default class TripController {
     this._creatingEvent.render(emptyEvent, EventControllerMode.ADDING);
   }
 
+  hide() {
+    this._container.hide();
+  }
+
+  show() {
+    this._container.show();
+  }
+
   _updateEvents() {
     this._removeEvents();
     this._renderEvents(this._eventsModel.getEvents(), true);

@@ -171,7 +171,7 @@ const createEditEventTemplate = (event, options = {}) => {
           ${mode === Mode.ADDING ? `</div>` : ``}
       </header>
 
-      <section class="event__details ${offers ? `visually-hidden` : ``}">
+      <section class="event__details">
         <section class="event__section  event__section--offers">
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
@@ -180,7 +180,7 @@ const createEditEventTemplate = (event, options = {}) => {
           </div>
         </section>
 
-        <section class="event__section  event__section--destination ${currentDescription ? `visually-hidden` : ``}">
+        <section class="event__section  event__section--destination">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
           <p class="event__destination-description">${currentDescription}</p>
 
