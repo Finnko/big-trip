@@ -6,28 +6,12 @@ import {parseDate, inputTagTimeFormatted, getTripTitle} from "../utils/common";
 import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
-const createImages = (images) => {
+const createImagesMarkup = (images) => {
   return images.map((image) => {
     return (
       `<img class="event__photo" src="${image.src}" alt="Event photo">`
     );
   }).join(`\n`);
-};
-
-const createImagesMarkup = (images) => {
-  // if (images.length === 0) {
-  //   //   return ``;
-  //   // }
-  console.log(images);
-
-  return (
-    `<div class="event__photos-container">
-      <div class="event__photos-tape">
-        ${createImages(images)}
-      </div>
-    </div>
-    `
-  );
 };
 
 const createGroupTypesMarkup = (group, currentType) => {
@@ -184,8 +168,11 @@ const createEditEventTemplate = (event, options = {}) => {
         <section class="event__section  event__section--destination">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
           <p class="event__destination-description">${currentDescription}</p>
-
-          ${images}
+          <div class="event__photos-container">
+            <div class="event__photos-tape">
+              ${images}
+            </div>
+          </div>
         </section>
       </section>
     </form>`
@@ -199,10 +186,6 @@ const parseFormData = (formData) => {
   let dateStart = parseDate(formData.get(`event-start-time`));
   let dateEnd = parseDate(formData.get(`event-end-time`));
 
-  if (dateStart > dateEnd) {
-    [dateStart, dateEnd] = [dateEnd, dateStart];
-  }
-
   return {
     type,
     city,
@@ -210,6 +193,8 @@ const parseFormData = (formData) => {
     dateStart,
     dateEnd,
     price: formData.get(`event-price`),
+    photos: [],
+   // offers: []
   };
 };
 

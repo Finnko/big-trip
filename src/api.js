@@ -15,6 +15,15 @@ export default class API {
     this._authorization = authorization;
   }
 
+  getDestinations() {
+    return this._load({url: `destinations`})
+      .then((response) => response.json());
+  }
+
+  getOffers() {
+    return this._load({url: `offers`})
+      .then((response) => response.json());
+  }
 
   getEvents() {
     return this._load({url: `points`})
@@ -22,10 +31,33 @@ export default class API {
       .then(EventModel.parseEvents);
   }
 
+  getData() {
+    return Promise.all([
+      this.getEvents(),
+      this.getOffers(),
+      this.getDestinations(),
+    ]).then((response) => {
+      const [eventList, offersList, destinations] = response;
+      return {
+        events: eventList,
+        offers: offersList,
+        destinations,
+      };
+    });
+  }
+
+
   createEvent(event) {
   }
 
   updateEvent(id, data) {
+    return this._load({
+      url: `points/${id}`,
+      method: Method.PUT,
+      body: JSON.stringify(data.toRAW()),
+    })
+      .then((response) => response.json())
+      .then(EventModel.parseEvent);
   }
 
   deleteEvent(id) {

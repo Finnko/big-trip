@@ -53,8 +53,9 @@ renderComponent(contentElement, statisticsComponent, RenderPosition.BEFOREEND);
 statisticsComponent.hide();
 filterController.render();
 
-api.getEvents()
-  .then((eventsData) => {
-    eventsModel.setEvents(eventsData);
+api.getData()
+  .then((data) => {
+    console.log(data.events);
+    eventsModel.setEvents(data.events);
     tripController.render();
-});
+  });

@@ -14,18 +14,18 @@ export default class EventModel {
 
   toRAW() {
     return {
-      id: this.id,
-      base_price: +this.price,
-      date_from: new Date(this.dateStart).toISOString(),
-      date_to: new Date(this.dateEnd).toISOString(),
-      destination: {
+      'id': this.id,
+      'base_price': this.price,
+      'date_from': new Date(this.dateStart).toISOString(),
+      'date_to': new Date(this.dateEnd).toISOString(),
+      'destination': {
         description: this.description,
         name: this.city,
         pictures: this.photos
       },
-      is_favorite: this.isFavorite,
-      offers: this.offers,
-      type: this.type
+      'is_favorite': this.isFavorite,
+      'offers': this.offers,
+      'type': this.type
     };
   }
 
@@ -34,7 +34,6 @@ export default class EventModel {
   }
 
   static parseEvents(data) {
-    console.log(data);
     return data.map((item) => EventModel.parseEvent(item));
   }
 
