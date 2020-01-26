@@ -1,35 +1,50 @@
 import TripEventComponent from "../components/trip-event";
 import TripEventEditComponent from "../components/trip-form";
-import {renderComponent, replaceComponent, RenderPosition} from '../utils/render.js';
-import {removeElement} from "../utils/render";
+import EventModel from "../models/event";
+import {renderComponent, replaceComponent, removeElement, RenderPosition} from '../utils/render.js';
+import {parseDate} from "../utils/common";
+import {emptyEvent, Mode} from "../const";
+import moment from 'moment';
+import he from 'he';
 
-const Mode = {
-  DEFAULT: `default`,
-  EDIT: `edit`,
-  ADDING: `adding`,
-};
+const parseFormData = (formData, form, destinations) => {
+  const city = he.encode(formData.get(`event-destination`));
+  const destination = destinations.find((item) => {
+    return city === item.name;
+  });
 
-const emptyEvent = {
-  id: String(Date.now() + Math.random()),
-  type: `Bus`,
-  title: ``,
-  city: ``,
-  description: ``,
-  photos: [],
-  dateStart: Date.now(),
-  dateEnd: Date.now(),
-  price: 0,
-  isFavorite: false,
-  offers: [],
+  const offersChecked = [...form.querySelectorAll(`.event__offer-checkbox:checked`)];
+  const offers = offersChecked.map((input) => {
+    return {
+      title: input.parentElement.querySelector(`.event__offer-title`).textContent,
+      price: parseInt(input.parentElement.querySelector(`.event__offer-price`).textContent, 10),
+    };
+  });
+
+  const startDate = parseDate(formData.get(`event-start-time`));
+  const endDate = parseDate(formData.get(`event-end-time`));
+  const price = he.encode(formData.get(`event-price`));
+
+  return new EventModel({
+    'type': formData.get(`event-type`),
+    'destination': destination,
+    'offers': offers,
+    'date_from': moment(startDate).toISOString(),
+    'date_to': moment(endDate).toISOString(),
+    'base_price': parseInt(price, 10),
+    'is_favorite': formData.get(`event-favorite`) === `on`,
+  });
 };
 
 export default class EventController {
-  constructor(container, onDataChange, onViewChange) {
+  constructor(container, onDataChange, onViewChange, destinations, offers) {
     this._container = container;
     this._onDataChange = onDataChange;
     this._onViewChange = onViewChange;
 
     this._mode = Mode.DEFAULT;
+    this._destinations = destinations;
+    this._offers = offers;
 
     this._tripEventComponent = null;
     this._tripEventEditComponent = null;
@@ -43,7 +58,7 @@ export default class EventController {
     this._mode = mode;
 
     this._tripEventComponent = new TripEventComponent(event);
-    this._tripEventEditComponent = new TripEventEditComponent(event);
+    this._tripEventEditComponent = new TripEventEditComponent(event, this._destinations, this._offers);
 
     this._tripEventComponent.setEditButtonHandler(() => {
       this._replaceEventToForm();
@@ -62,7 +77,10 @@ export default class EventController {
 
     this._tripEventEditComponent.setFormSubmitHandler((evt) => {
       evt.preventDefault();
-      const data = this._tripEventEditComponent.getData();
+      const formData = this._tripEventEditComponent.getData();
+      const form = this._tripEventEditComponent.getElement();
+      const data = parseFormData(formData, form, this._destinations);
+
       this._onDataChange(this, event, data);
     });
 

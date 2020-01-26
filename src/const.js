@@ -57,8 +57,26 @@ const menuItems = [
   },
 ];
 
+const Mode = {
+  DEFAULT: `default`,
+  EDIT: `edit`,
+  ADDING: `adding`,
+};
+
+const emptyEvent = {
+  type: `trip`,
+  city: ``,
+  photos: [],
+  description: ``,
+  offers: [],
+  startDate: Date.now(),
+  endDate: Date.now(),
+  price: 0,
+  isFavorite: false
+};
+
 const EventTypes = {
-  TRANSFER: [`Bus`, `Drive`, `Flight`, `Ship`, `Taxi`, `Train`, `Transport`, `Trip`],
+  TRANSFER: [`bus`, `drive`, `flight`, `ship`, `taxi`, `train`, `transport`],
   ACTIVITY: [`check-in`, `restaurant`, `sightseeing`],
 };
 
@@ -80,5 +98,5 @@ const AUTHORIZATION = `Basic gnr59199ik29889a`;
 
 export {
   eventOptions, EventTypes, monthNames, FilterType, menuItems,
-  MenuTitles, Method, END_POINT, AUTHORIZATION
+  MenuTitles, Method, END_POINT, AUTHORIZATION, emptyEvent, Mode
 };

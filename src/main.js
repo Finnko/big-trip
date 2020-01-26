@@ -23,7 +23,7 @@ const statisticsComponent = new StatisticsComponent(eventsModel);
 const boardComponent = new TripBoardComponent();
 
 const filterController = new FilterController(controlElement, eventsModel);
-const tripController = new TripController(boardComponent, eventsModel);
+const tripController = new TripController(boardComponent, eventsModel, api);
 
 createEventElement.addEventListener(`click`, () => {
   tripController.createEvent();
@@ -44,8 +44,6 @@ menuComponent.setChangeHandler((menuItem) => {
   }
 });
 
-//eventsModel.setEvents(eventsData);
-
 renderComponent(controlElement, menuComponent, RenderPosition.BEFOREEND);
 renderComponent(contentElement, boardComponent, RenderPosition.BEFOREEND);
 renderComponent(contentElement, statisticsComponent, RenderPosition.BEFOREEND);
@@ -55,7 +53,8 @@ filterController.render();
 
 api.getData()
   .then((data) => {
-    console.log(data.events);
     eventsModel.setEvents(data.events);
+    tripController.setDestinations(data.destinations);
+    tripController.setOffers(data.offers);
     tripController.render();
   });

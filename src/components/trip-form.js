@@ -1,9 +1,9 @@
 import AbstractSmartComponent from "./abstract-smart-component";
 import {eventOptions, EventTypes} from "../const";
-import {destinations, eventsData} from "../mocks/event";
 import {Mode} from "../controllers/event";
-import {parseDate, inputTagTimeFormatted, getTripTitle} from "../utils/common";
+import {inputTagTimeFormatted, getTripTitle, getUpperCaseFirstLetter} from "../utils/common";
 import flatpickr from 'flatpickr';
+import nanoid from 'nanoid';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 const createImagesMarkup = (images) => {
@@ -16,20 +16,19 @@ const createImagesMarkup = (images) => {
 
 const createGroupTypesMarkup = (group, currentType) => {
   return group.map((type) => {
-    const typeIcon = type.toLowerCase();
     const isChecked = type === currentType;
     return (
       `<div class="event__type-item">
          <input
-           id="event-type-${typeIcon}-1"
+           id="event-type-${type}"
            class="event__type-input  visually-hidden"
            type="radio"
            name="event-type"
            value="${type}"
            ${isChecked ? `checked` : ``}
          >
-         <label class="event__type-label  event__type-label--${typeIcon}" for="event-type-${typeIcon}-1">
-          ${type}
+         <label class="event__type-label  event__type-label--${type}" for="event-type-${type}">
+          ${getUpperCaseFirstLetter(type)}
          </label>
        </div>`
     );
@@ -47,53 +46,53 @@ const createTypesMarkup = (allTypes, currentType) => {
   }).join(`\n`);
 };
 
-const createOffersMarkup = (allOffers, chosenOffers) => {
-  if (chosenOffers.length === 0) {
-    return ``;
-  }
+const createOffersMarkup = (type, eventOffers, allOffers) => {
+  const availableOffers = allOffers.find((item) => type === item.type);
 
-  return allOffers.map((offer) => {
-    const {name, type, price} = offer;
-    const isChecked = Array.from(chosenOffers).some((chosenOffer) => chosenOffer.type === type);
+  return availableOffers.offers
+    .map((offer) => {
+      const offerId = nanoid();
+      const isChecked = eventOffers.find((eventOffer) => eventOffer.title === offer.title);
 
-    return (
-      `<div class="event__offer-selector">
-         <input
-           class="event__offer-checkbox  visually-hidden"
-           id="event-offer-${type}-1"
-           type="checkbox"
-           name="event-offer-${type}"
-           ${isChecked ? `checked` : ``}
-         >
-         <label class="event__offer-label" for="event-offer-${type}-1">
-           <span class="event__offer-title">${name}</span>
-            &plus;
-            &euro;&nbsp;<span class="event__offer-price">${price}</span>
-        </label>
-      </div>`
-    );
-  }).join(`\n`);
+      return `<div class="event__offer-selector">
+               <input
+                 class="event__offer-checkbox  visually-hidden"
+                 id="event-offer-${offerId}"
+                 type="checkbox"
+                 name="event-offer-${type}"
+                 ${isChecked ? `checked` : ``}
+               >
+               <label class="event__offer-label" for="event-offer-${offerId}">
+                 <span class="event__offer-title">${offer.title}</span>
+                  &plus;
+                  &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
+              </label>
+              </div>`;
+    }).join(`\n`);
 };
 
-const createDestinationsMarkup = () => {
-  return [...destinations].map((item) => {
-    return `<option value="${item}"></option>`;
-  }).join(`\n`);
+const createDestinationsMarkup = (destinations) => {
+  return destinations
+    .map((destination) => {
+      return `
+        <option value="${destination.name}"></option>
+      `;
+    })
+    .join(``);
 };
 
 const createEditEventTemplate = (event, options = {}) => {
-  const {dateStart, dateEnd, offers, isFavorite, price, photos} = event;
-  const {currentCity, currentDescription, currentType, mode} = options;
+  const {dateStart, dateEnd, eventOffers, isFavorite, price, photos} = event;
+  const {currentCity, currentType, mode, currentDescription, destinations, offers} = options;
   const timeStartFormatted = inputTagTimeFormatted(dateStart);
   const timeEndFormatted = inputTagTimeFormatted(dateEnd);
   const images = createImagesMarkup(photos);
   const types = createTypesMarkup(EventTypes, currentType);
-  const currentOffers = createOffersMarkup(eventOptions, offers);
-
-  const destinationOptions = createDestinationsMarkup();
+  const destinationList = createDestinationsMarkup(destinations);
+  const currentOffers = createOffersMarkup(currentType, eventOffers, offers);
 
   return (
-    `<form class="trip-events__item event  event--edit" action="#" method="post">
+    `<form class="trip-events__item event event--edit" action="#" method="post">
       <header class="event__header">
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-1">
@@ -111,7 +110,7 @@ const createEditEventTemplate = (event, options = {}) => {
           </label>
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${currentCity}" list="destination-list-1">
           <datalist id="destination-list-1">
-            ${destinationOptions}
+            ${destinationList}
           </datalist>
         </div>
         <div class="event__field-group  event__field-group--time">
@@ -156,7 +155,9 @@ const createEditEventTemplate = (event, options = {}) => {
           ${mode === Mode.ADDING ? `</div>` : ``}
       </header>
 
-      <section class="event__details">
+      ${mode === Mode.ADDING
+      ? ``
+      : `<section class="event__details">
         <section class="event__section  event__section--offers">
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
@@ -174,32 +175,14 @@ const createEditEventTemplate = (event, options = {}) => {
             </div>
           </div>
         </section>
-      </section>
+      </section>`
+    }
     </form>`
   );
 };
 
-const parseFormData = (formData) => {
-  const type = formData.get(`event-type`);
-  const city = formData.get(`event-destination`);
-  const title = getTripTitle(type, city);
-  let dateStart = parseDate(formData.get(`event-start-time`));
-  let dateEnd = parseDate(formData.get(`event-end-time`));
-
-  return {
-    type,
-    city,
-    title,
-    dateStart,
-    dateEnd,
-    price: formData.get(`event-price`),
-    photos: [],
-   // offers: []
-  };
-};
-
 export default class TripEdit extends AbstractSmartComponent {
-  constructor(event) {
+  constructor(event, destinations, offers) {
     super();
 
     this._event = event;
@@ -213,6 +196,8 @@ export default class TripEdit extends AbstractSmartComponent {
     this._currentType = event.type;
     this._currentCity = event.city;
     this._currentDescription = event.description;
+    this._destinations = destinations;
+    this._offers = offers;
 
     this._applyFlatpickr();
     this._subscribeOnEvents();
@@ -223,14 +208,15 @@ export default class TripEdit extends AbstractSmartComponent {
       currentType: this._currentType,
       currentCity: this._currentCity,
       currentDescription: this._currentDescription,
+      destinations: this._destinations,
+      offers: this._offers,
       mode: this._mode,
     });
   }
 
   getData() {
     const form = this.getElement();
-    const formData = new FormData(form);
-    return parseFormData(formData);
+    return new FormData(form);
   }
 
   setMode(mode) {
@@ -332,19 +318,18 @@ export default class TripEdit extends AbstractSmartComponent {
       });
 
     element.querySelector(`.event__input--destination`)
-      .addEventListener(`change`, (evt) => {
-        if (evt.target.tagName === `INPUT`) {
-          const targetCity = evt.target.value;
+      .addEventListener(`input`, (evt) => {
+        const destination = this._destinations.find((item) => {
+          return item.name === evt.target.value;
+        });
+        const targetCity = destination.name;
 
-          if (this._currentCity === targetCity) {
-            return;
-          }
-
-          const index = eventsData.findIndex((item) => item.city === targetCity);
-          this._currentDescription = eventsData[index].description;
-          this._currentCity = targetCity;
-          this.rerender();
+        if (this._currentCity === targetCity) {
+          return;
         }
+        this._currentDescription = destination.description;
+        this._currentCity = targetCity;
+        this.rerender();
       });
   }
 }

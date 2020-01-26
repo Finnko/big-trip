@@ -5,7 +5,7 @@ export default class EventModel {
     this.city = data[`destination`][`name`];
     this.dateStart = new Date(data[`date_from`]).getTime();
     this.dateEnd = new Date(data[`date_to`]).getTime();
-    this.offers = data[`offers`];
+    this.eventOffers = data[`offers`];
     this.photos = data[`destination`][`pictures`];
     this.description = data[`destination`][`description`];
     this.price = data[`base_price`];
@@ -24,7 +24,7 @@ export default class EventModel {
         pictures: this.photos
       },
       'is_favorite': this.isFavorite,
-      'offers': this.offers,
+      'offers': this.eventOffers,
       'type': this.type
     };
   }

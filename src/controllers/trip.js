@@ -11,7 +11,15 @@ const renderTripInfo = (days) => {
   return renderComponent(routeElement, new TripInfoComponent(days), RenderPosition.BEFOREEND);
 };
 
-const renderEvents = (events, container, onDataChange, onViewChange, isSortedByDefault) => {
+const renderEvents = (
+    events,
+    container,
+    onDataChange,
+    onViewChange,
+    destinations,
+    offers,
+    isSortedByDefault
+) => {
   const eventControllers = [];
   let dates = isSortedByDefault
     ? Array.from(new Set(events.map((item) => new Date(item.dateStart).toDateString())))
@@ -26,7 +34,7 @@ const renderEvents = (events, container, onDataChange, onViewChange, isSortedByD
         return isSortedByDefault ? new Date(item.dateStart).toDateString() === date : item;
       })
       .forEach((item) => {
-        const eventController = new EventController(eventsListContainer, onDataChange, onViewChange);
+        const eventController = new EventController(eventsListContainer, onDataChange, onViewChange, destinations, offers);
         eventController.render(item, EventControllerMode.DEFAULT);
         eventControllers.push(eventController);
       });
@@ -38,11 +46,13 @@ const renderEvents = (events, container, onDataChange, onViewChange, isSortedByD
 };
 
 export default class TripController {
-  constructor(container, eventsModel) {
+  constructor(container, eventsModel, api) {
     this._container = container;
     this._eventsModel = eventsModel;
     this._eventControllers = [];
     this._creatingEvent = null;
+    this._destinations = [];
+    this._offers = [];
 
     this._noEventsComponent = new NoEventsComponent();
     this._sortComponent = new SortComponent();
@@ -93,6 +103,14 @@ export default class TripController {
     this._container.show();
   }
 
+  setDestinations(destinations) {
+    this._destinations = destinations;
+  }
+
+  setOffers(offers) {
+    this._offers = offers;
+  }
+
   _updateEvents() {
     this._removeEvents();
     this._renderEvents(this._eventsModel.getEvents(), true);
@@ -108,8 +126,14 @@ export default class TripController {
 
   _renderEvents(events, isSortedByDefault) {
     const daysListElement = this._daysListComponent.getElement();
-
-    this._eventControllers = renderEvents(events, daysListElement, this._onDataChange, this._onViewChange, isSortedByDefault);
+    this._eventControllers = renderEvents(
+        events,
+        daysListElement,
+        this._onDataChange,
+        this._onViewChange,
+        this._destinations,
+        this._offers,
+        isSortedByDefault);
   }
 
   _onDataChange(eventController, oldData, newData) {

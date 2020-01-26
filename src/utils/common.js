@@ -25,13 +25,15 @@ const getRandomDate = () => {
   return targetDate;
 };
 
+const getUpperCaseFirstLetter = (string) => string.substring(0, 1).toUpperCase() + string.slice(1);
+
 const getTripTitle = (type, city) => {
   let delimiter = ``;
 
   if (EventTypes.TRANSFER.includes(type)) {
     delimiter = `to`;
   } else {
-    delimiter = `in`;
+    delimiter = `at`;
   }
 
   return `${type} ${delimiter} ${city}`;
@@ -90,6 +92,6 @@ const isOneDay = (dateA, dateB) => {
 };
 
 export {
-  getRandomInRange, getRandomArrayItem, getRandomDate, getTripTitle, repeat, getEventDuration, parseDate,
+  getRandomInRange, getRandomArrayItem, getUpperCaseFirstLetter, getTripTitle, repeat, getEventDuration, parseDate,
   timeTagFormatted, castDurationFormat, castTimeFormat, inputTagTimeFormatted, isOneDay, getDatesHoursDiff
 };
