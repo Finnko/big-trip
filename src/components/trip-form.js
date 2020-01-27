@@ -1,7 +1,7 @@
 import AbstractSmartComponent from "./abstract-smart-component";
-import {eventOptions, EventTypes} from "../const";
+import {EventTypes} from "../const";
 import {Mode} from "../controllers/event";
-import {inputTagTimeFormatted, getTripTitle, getUpperCaseFirstLetter} from "../utils/common";
+import {inputTagTimeFormatted, getUpperCaseFirstLetter} from "../utils/common";
 import flatpickr from 'flatpickr';
 import nanoid from 'nanoid';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
@@ -46,6 +46,10 @@ const createTypesMarkup = (allTypes, currentType) => {
   }).join(`\n`);
 };
 
+const checkOffers = (type, offers) => {
+  return offers.find((offer) => type === (offer.type)).offers.length !== 0;
+};
+
 const createOffersMarkup = (type, eventOffers, allOffers) => {
   const availableOffers = allOffers.find((item) => type === item.type);
 
@@ -86,10 +90,11 @@ const createEditEventTemplate = (event, options = {}) => {
   const {currentCity, currentType, mode, currentDescription, destinations, offers} = options;
   const timeStartFormatted = inputTagTimeFormatted(dateStart);
   const timeEndFormatted = inputTagTimeFormatted(dateEnd);
-  const images = createImagesMarkup(photos);
   const types = createTypesMarkup(EventTypes, currentType);
   const destinationList = createDestinationsMarkup(destinations);
   const currentOffers = createOffersMarkup(currentType, eventOffers, offers);
+  const isAvailableOffers = checkOffers(currentType, offers);
+  const images = createImagesMarkup(photos);
 
   return (
     `<form class="trip-events__item event event--edit" action="#" method="post">
@@ -155,16 +160,18 @@ const createEditEventTemplate = (event, options = {}) => {
           ${mode === Mode.ADDING ? `</div>` : ``}
       </header>
 
-      ${mode === Mode.ADDING
+      ${mode === Mode.ADDING && currentDescription === ``
       ? ``
       : `<section class="event__details">
-        <section class="event__section  event__section--offers">
-          <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
-          <div class="event__available-offers">
-            ${currentOffers}
-          </div>
-        </section>
+         ${isAvailableOffers ? `<section class="event__section  event__section--offers">
+              <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+
+              <div class="event__available-offers">
+                ${currentOffers}
+              </div>
+            </section>
+          ` : ``}
 
         <section class="event__section  event__section--destination">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
@@ -182,7 +189,7 @@ const createEditEventTemplate = (event, options = {}) => {
 };
 
 export default class TripEdit extends AbstractSmartComponent {
-  constructor(event, destinations, offers) {
+  constructor(event, mode, destinations, offers) {
     super();
 
     this._event = event;
@@ -192,7 +199,7 @@ export default class TripEdit extends AbstractSmartComponent {
     this._deleteButtonHandler = null;
     this._flatpickr = null;
 
-    this._mode = Mode.DEFAULT;
+    this._mode = mode;
     this._currentType = event.type;
     this._currentCity = event.city;
     this._currentDescription = event.description;
@@ -217,12 +224,6 @@ export default class TripEdit extends AbstractSmartComponent {
   getData() {
     const form = this.getElement();
     return new FormData(form);
-  }
-
-  setMode(mode) {
-    this._mode = mode;
-
-    this.rerender();
   }
 
   removeElement() {
@@ -322,6 +323,11 @@ export default class TripEdit extends AbstractSmartComponent {
         const destination = this._destinations.find((item) => {
           return item.name === evt.target.value;
         });
+
+        if (!destination) {
+          return;
+        }
+
         const targetCity = destination.name;
 
         if (this._currentCity === targetCity) {

@@ -26,6 +26,9 @@ const filterController = new FilterController(controlElement, eventsModel);
 const tripController = new TripController(boardComponent, eventsModel, api);
 
 createEventElement.addEventListener(`click`, () => {
+  menuComponent.setActiveItem(MenuTitles.TABLE);
+  tripController.show();
+  statisticsComponent.hide();
   tripController.createEvent();
 });
 

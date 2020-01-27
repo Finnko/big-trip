@@ -7,6 +7,8 @@ import {
 } from "../utils/common";
 import AbstractComponent from "./abstract-component";
 
+const OFFERS_MAX_TO_SHOW = 3;
+
 const createOffersMarkup = (offers) => {
   return offers.map((offer) => {
     return (
@@ -16,7 +18,7 @@ const createOffersMarkup = (offers) => {
        &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
   </li>`
     );
-  }).slice(0, 3).join(`\n`);
+  }).slice(0, OFFERS_MAX_TO_SHOW).join(`\n`);
 };
 
 const createTripEventTemplate = (event) => {
@@ -26,7 +28,7 @@ const createTripEventTemplate = (event) => {
   const timeStartTagFormat = timeTagFormatted(dateStart);
   const timeEnd = castTimeFormat(dateEnd);
   const timeEndTagFormat = timeTagFormatted(dateEnd);
-  const currentOffers = eventOffers.length ? createOffersMarkup(eventOffers) : ``;
+  const currentOffers = createOffersMarkup(eventOffers);
   const title = getUpperCaseFirstLetter(getTripTitle(type, city));
 
   const duration = getEventDuration(dateStart, dateEnd);

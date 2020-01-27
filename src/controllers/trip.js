@@ -18,8 +18,7 @@ const renderEvents = (
     onViewChange,
     destinations,
     offers,
-    isSortedByDefault
-) => {
+    isSortedByDefault) => {
   const eventControllers = [];
   let dates = isSortedByDefault
     ? Array.from(new Set(events.map((item) => new Date(item.dateStart).toDateString())))
@@ -49,6 +48,7 @@ export default class TripController {
   constructor(container, eventsModel, api) {
     this._container = container;
     this._eventsModel = eventsModel;
+    this._api = api;
     this._eventControllers = [];
     this._creatingEvent = null;
     this._destinations = [];
@@ -90,8 +90,13 @@ export default class TripController {
     this._onViewChange();
     const daysListElement = this._daysListComponent.getElement();
 
-    this._creatingEvent = new EventController(daysListElement, this._onDataChange, this._onViewChange);
-    this._eventControllers = [this._creatingEvent, ...this._eventControllers];
+    this._creatingEvent = new EventController(
+        daysListElement,
+        this._onDataChange,
+        this._onViewChange,
+        this._destinations,
+        this._offers);
+
     this._creatingEvent.render(emptyEvent, EventControllerMode.ADDING);
   }
 

@@ -56,9 +56,10 @@ export default class EventController {
     const oldTripEventComponent = this._tripEventComponent;
     const oldTripEventEditComponent = this._tripEventEditComponent;
     this._mode = mode;
+    this._event = event;
 
     this._tripEventComponent = new TripEventComponent(event);
-    this._tripEventEditComponent = new TripEventEditComponent(event, this._destinations, this._offers);
+    this._tripEventEditComponent = new TripEventEditComponent(event, this._mode, this._destinations, this._offers);
 
     this._tripEventComponent.setEditButtonHandler(() => {
       this._replaceEventToForm();
@@ -84,27 +85,27 @@ export default class EventController {
       this._onDataChange(this, event, data);
     });
 
-    this._tripEventEditComponent.setDeleteButtonClickHandler(() => this._onDataChange(this, event, null));
+    this._tripEventEditComponent.setDeleteButtonClickHandler(() => {
+      this._onDeleteButtonClick(this._mode);
+    });
 
     switch (mode) {
       case Mode.DEFAULT:
-        this._tripEventEditComponent.setMode(mode);
-
         if (oldTripEventComponent && oldTripEventEditComponent) {
           replaceComponent(this._tripEventComponent, oldTripEventComponent);
           replaceComponent(this._tripEventEditComponent, oldTripEventEditComponent);
+
           this._replaceFormToEvent();
         } else {
           renderComponent(this._container, this._tripEventComponent, RenderPosition.BEFOREEND);
         }
         break;
       case Mode.ADDING:
-        this._tripEventEditComponent.setMode(mode);
-
         if (oldTripEventComponent && oldTripEventEditComponent) {
           removeElement(oldTripEventComponent);
           removeElement(oldTripEventEditComponent);
         }
+
         document.addEventListener(`keydown`, this._onEscKeyDown);
         renderComponent(this._container, this._tripEventEditComponent, RenderPosition.AFTERBEGIN);
         break;
@@ -139,6 +140,14 @@ export default class EventController {
 
     replaceComponent(this._tripEventEditComponent, this._tripEventComponent);
     this._mode = Mode.EDIT;
+  }
+
+  _onDeleteButtonClick(mode) {
+    if (mode === Mode.ADDING) {
+      this._onDataChange(this, emptyEvent, null);
+    } else {
+      this._onDataChange(this, this._event, null);
+    }
   }
 
   _onEscKeyDown(evt) {

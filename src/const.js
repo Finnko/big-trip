@@ -64,11 +64,11 @@ const Mode = {
 };
 
 const emptyEvent = {
-  type: `trip`,
+  type: `bus`,
   city: ``,
   photos: [],
   description: ``,
-  offers: [],
+  eventOffers: [],
   startDate: Date.now(),
   endDate: Date.now(),
   price: 0,
