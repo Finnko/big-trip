@@ -1,30 +1,6 @@
 import moment from "moment";
 import {EventTypes} from "../const";
 
-const getRandomInRange = function (min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-};
-
-const getRandomArrayItem = (array) => {
-  const randomIndex = getRandomInRange(0, array.length - 1);
-
-  return array[randomIndex];
-};
-
-const getRandomDate = () => {
-  const targetDate = new Date();
-
-  const sign = Math.random() > 0.5 ? 1 : -1;
-  const diffValue = sign * getRandomInRange(0, 2);
-  const hours = getRandomInRange(0, 23);
-  const minutes = getRandomInRange(0, 59);
-
-  targetDate.setDate(targetDate.getDate() + diffValue);
-  targetDate.setHours(hours, minutes);
-
-  return targetDate;
-};
-
 const getUpperCaseFirstLetter = (string) => string.substring(0, 1).toUpperCase() + string.slice(1);
 
 const getTripTitle = (type, city) => {
@@ -33,7 +9,7 @@ const getTripTitle = (type, city) => {
   if (EventTypes.TRANSFER.includes(type)) {
     delimiter = `to`;
   } else {
-    delimiter = `at`;
+    delimiter = `in`;
   }
 
   return `${type} ${delimiter} ${city}`;
@@ -55,10 +31,6 @@ const timeTagFormatted = (date) => {
 
 const inputTagTimeFormatted = (date) => {
   return moment(date).format(`DD/MM/YY HH:mm`);
-};
-
-const repeat = (count, fn) => {
-  return Array(count).fill(``).map(fn);
 };
 
 const getDatesHoursDiff = (dateA, dateB) => {
@@ -88,10 +60,10 @@ const getEventDuration = (dateA, dateB) => {
 const isOneDay = (dateA, dateB) => {
   const a = moment(dateA);
   const b = moment(dateB);
-  return a.diff(b, `days`) === 0 && dateA.getDate() === dateB.getDate();
+  return a.diff(b, `days`) === 0 && dateA === dateB;
 };
 
 export {
-  getRandomInRange, getRandomArrayItem, getUpperCaseFirstLetter, getTripTitle, repeat, getEventDuration, parseDate,
-  timeTagFormatted, castDurationFormat, castTimeFormat, inputTagTimeFormatted, isOneDay, getDatesHoursDiff
+  getUpperCaseFirstLetter, getTripTitle, getEventDuration, parseDate, timeTagFormatted,
+  castDurationFormat, castTimeFormat, inputTagTimeFormatted, isOneDay, getDatesHoursDiff
 };

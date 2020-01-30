@@ -178,8 +178,8 @@ export default class TripController {
         break;
       case SortType.TIME:
         sortedEvents = events.slice().sort((a, b) =>
-          Math.abs(b.dateStart.getTime() - b.dateEnd.getTime()) -
-          Math.abs(a.dateStart.getTime() - a.dateEnd.getTime()));
+          Math.abs(b.dateStart - b.dateEnd) -
+          Math.abs(a.dateStart - a.dateEnd));
         break;
       case SortType.DEFAULT:
         sortedEvents = [];
