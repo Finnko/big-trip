@@ -1,10 +1,12 @@
 import AbstractSmartComponent from "./abstract-smart-component";
-import {EventTypes} from "../const";
+import {EventTypes, DefaultButtonText} from "../const";
 import {Mode} from "../controllers/event";
 import {inputTagTimeFormatted, getUpperCaseFirstLetter, getTripTitle} from "../utils/common";
 import flatpickr from 'flatpickr';
 import nanoid from 'nanoid';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
+
+const SHAKE_ANIMATION_TIMEOUT = 600;
 
 const createImagesMarkup = (images) => {
   return images.map((image) => {
