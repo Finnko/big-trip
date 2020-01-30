@@ -163,11 +163,8 @@ export default class TripController {
       this._updateEvents();
 
     } else {
-      console.log(`old`, oldData.toRAW());
-      console.log(`new`, newData);
       this._api.updateEvent(oldData.id, newData)
         .then((eventModel) => {
-          console.log(eventModel);
           const isSuccess = this._eventsModel.updateEvent(oldData.id, eventModel);
 
           if (isSuccess) {
