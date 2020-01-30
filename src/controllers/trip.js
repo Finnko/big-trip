@@ -53,6 +53,7 @@ export default class TripController {
     this._creatingEvent = null;
     this._destinations = [];
     this._offers = [];
+    this._activeSortType = SortType.DEFAULT;
 
     this._noEventsComponent = new NoEventsComponent();
     this._sortComponent = new SortComponent();
@@ -139,28 +140,40 @@ export default class TripController {
         this._destinations,
         this._offers,
         isSortedByDefault);
+
+
   }
 
   _onDataChange(eventController, oldData, newData) {
     if (oldData === emptyEvent) {
       this._creatingEvent = null;
+
       if (newData === null) {
         eventController.destroy();
         this._updateEvents();
+
       } else {
         this._eventsModel.addEvent(newData);
         eventController.render(newData, EventControllerMode.ADDING);
         this._updateEvents();
       }
+
     } else if (newData === null) {
       this._eventsModel.removeEvent(oldData.id);
       this._updateEvents();
-    } else {
-      const isSuccess = this._eventsModel.updateEvent(oldData.id, newData);
 
-      if (isSuccess) {
-        eventController.render(newData, EventControllerMode.DEFAULT);
-      }
+    } else {
+      console.log(`old`, oldData.toRAW());
+      console.log(`new`, newData);
+      this._api.updateEvent(oldData.id, newData)
+        .then((eventModel) => {
+          console.log(eventModel);
+          const isSuccess = this._eventsModel.updateEvent(oldData.id, eventModel);
+
+          if (isSuccess) {
+            eventController.render(newData, EventControllerMode.DEFAULT);
+          }
+        });
     }
   }
 
@@ -171,6 +184,7 @@ export default class TripController {
   _onSortTypeChange(sortType) {
     let sortedEvents = [];
     const events = this._eventsModel.getEvents();
+    this._activeSortType = sortType;
 
     switch (sortType) {
       case SortType.PRICE:
@@ -198,5 +212,6 @@ export default class TripController {
 
   _onFilterChange() {
     this._updateEvents();
+    this._onSortTypeChange(this._activeSortType);
   }
 }

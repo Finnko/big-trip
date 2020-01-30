@@ -1,7 +1,7 @@
 import AbstractSmartComponent from "./abstract-smart-component";
 import {EventTypes} from "../const";
 import {Mode} from "../controllers/event";
-import {inputTagTimeFormatted, getUpperCaseFirstLetter} from "../utils/common";
+import {inputTagTimeFormatted, getUpperCaseFirstLetter, getTripTitle} from "../utils/common";
 import flatpickr from 'flatpickr';
 import nanoid from 'nanoid';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
@@ -86,15 +86,16 @@ const createDestinationsMarkup = (destinations) => {
 };
 
 const createEditEventTemplate = (event, options = {}) => {
-  const {dateStart, dateEnd, eventOffers, isFavorite, price, photos} = event;
-  const {currentCity, currentType, mode, currentDescription, destinations, offers} = options;
+  const {dateStart, dateEnd, eventOffers, isFavorite, price} = event;
+  const {currentCity, currentType, mode, currentDescription, destinations, offers, currentPhotos} = options;
   const timeStartFormatted = inputTagTimeFormatted(dateStart);
   const timeEndFormatted = inputTagTimeFormatted(dateEnd);
   const types = createTypesMarkup(EventTypes, currentType);
   const destinationList = createDestinationsMarkup(destinations);
   const currentOffers = createOffersMarkup(currentType, eventOffers, offers);
   const isAvailableOffers = checkOffers(currentType, offers);
-  const images = createImagesMarkup(photos);
+  const images = createImagesMarkup(currentPhotos);
+  const titlePlaceholder = getUpperCaseFirstLetter(getTripTitle(currentType, currentCity, `placeholder`));
 
   return (
     `<form class="trip-events__item event event--edit" action="#" method="post">
@@ -111,7 +112,7 @@ const createEditEventTemplate = (event, options = {}) => {
         </div>
         <div class="event__field-group  event__field-group--destination">
           <label class="event__label  event__type-output" for="event-destination-1">
-            Sightseeing at
+            ${titlePlaceholder}
           </label>
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${currentCity}" list="destination-list-1">
           <datalist id="destination-list-1">
@@ -203,6 +204,7 @@ export default class TripEdit extends AbstractSmartComponent {
     this._currentType = event.type;
     this._currentCity = event.city;
     this._currentDescription = event.description;
+    this._currentPhotos = event.photos;
     this._destinations = destinations;
     this._offers = offers;
 
@@ -215,6 +217,7 @@ export default class TripEdit extends AbstractSmartComponent {
       currentType: this._currentType,
       currentCity: this._currentCity,
       currentDescription: this._currentDescription,
+      currentPhotos: this._currentPhotos,
       destinations: this._destinations,
       offers: this._offers,
       mode: this._mode,
@@ -278,6 +281,7 @@ export default class TripEdit extends AbstractSmartComponent {
     this._currentType = event.type;
     this._currentCity = event.city;
     this._currentDescription = event.description;
+    this._currentPhotos = event.photos;
 
     this.rerender();
   }
@@ -333,7 +337,9 @@ export default class TripEdit extends AbstractSmartComponent {
         if (this._currentCity === targetCity) {
           return;
         }
+
         this._currentDescription = destination.description;
+        this._currentPhotos = destination.pictures;
         this._currentCity = targetCity;
         this.rerender();
       });

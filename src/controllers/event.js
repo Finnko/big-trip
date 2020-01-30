@@ -56,7 +56,6 @@ export default class EventController {
     const oldTripEventComponent = this._tripEventComponent;
     const oldTripEventEditComponent = this._tripEventEditComponent;
     this._mode = mode;
-    this._event = event;
 
     this._tripEventComponent = new TripEventComponent(event);
     this._tripEventEditComponent = new TripEventEditComponent(event, this._mode, this._destinations, this._offers);
@@ -67,9 +66,10 @@ export default class EventController {
     });
 
     this._tripEventEditComponent.setFavoriteButtonHandler(() => {
-      this._onDataChange(this, event, Object.assign({}, event, {
-        isFavorite: !event.isFavorite,
-      }));
+      const newEvent = EventModel.clone(event);
+      newEvent.isFavorite = !newEvent.isFavorite;
+
+      this._onDataChange(this, event, newEvent);
     });
 
     this._tripEventEditComponent.setCloseButtonClickHandler(() => {

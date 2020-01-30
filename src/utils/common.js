@@ -3,7 +3,7 @@ import {EventTypes} from "../const";
 
 const getUpperCaseFirstLetter = (string) => string.substring(0, 1).toUpperCase() + string.slice(1);
 
-const getTripTitle = (type, city) => {
+const getTripTitle = (type, city, modifier = `title`) => {
   let delimiter = ``;
 
   if (EventTypes.TRANSFER.includes(type)) {
@@ -12,7 +12,11 @@ const getTripTitle = (type, city) => {
     delimiter = `in`;
   }
 
-  return `${type} ${delimiter} ${city}`;
+  if (modifier === `title`) {
+    return `${type} ${delimiter} ${city}`;
+  } else {
+    return `${type} ${delimiter}`;
+  }
 };
 
 const parseDate = (dateString) => moment(dateString, `DD/MM/YY HH:mm`).valueOf();
@@ -65,5 +69,5 @@ const isOneDay = (dateA, dateB) => {
 
 export {
   getUpperCaseFirstLetter, getTripTitle, getEventDuration, parseDate, timeTagFormatted,
-  castDurationFormat, castTimeFormat, inputTagTimeFormatted, isOneDay, getDatesHoursDiff
+  castDurationFormat, castTimeFormat, inputTagTimeFormatted, isOneDay, getDatesHoursDiff,
 };
