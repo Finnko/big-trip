@@ -11,7 +11,14 @@ const renderTripInfo = (days) => {
   return renderComponent(routeElement, new TripInfoComponent(days), RenderPosition.BEFOREEND);
 };
 
-const renderEvents = (events, container, onDataChange, onViewChange, isSortedByDefault) => {
+const renderEvents = (
+    events,
+    container,
+    onDataChange,
+    onViewChange,
+    destinations,
+    offers,
+    isSortedByDefault) => {
   const eventControllers = [];
   let dates = isSortedByDefault
     ? Array.from(new Set(events.map((item) => new Date(item.dateStart).toDateString())))
@@ -26,7 +33,7 @@ const renderEvents = (events, container, onDataChange, onViewChange, isSortedByD
         return isSortedByDefault ? new Date(item.dateStart).toDateString() === date : item;
       })
       .forEach((item) => {
-        const eventController = new EventController(eventsListContainer, onDataChange, onViewChange);
+        const eventController = new EventController(eventsListContainer, onDataChange, onViewChange, destinations, offers);
         eventController.render(item, EventControllerMode.DEFAULT);
         eventControllers.push(eventController);
       });
@@ -38,11 +45,15 @@ const renderEvents = (events, container, onDataChange, onViewChange, isSortedByD
 };
 
 export default class TripController {
-  constructor(container, eventsModel) {
+  constructor(container, eventsModel, api) {
     this._container = container;
     this._eventsModel = eventsModel;
+    this._api = api;
     this._eventControllers = [];
     this._creatingEvent = null;
+    this._destinations = [];
+    this._offers = [];
+    this._activeSortType = SortType.DEFAULT;
 
     this._noEventsComponent = new NoEventsComponent();
     this._sortComponent = new SortComponent();
@@ -80,8 +91,13 @@ export default class TripController {
     this._onViewChange();
     const daysListElement = this._daysListComponent.getElement();
 
-    this._creatingEvent = new EventController(daysListElement, this._onDataChange, this._onViewChange);
-    this._eventControllers = [this._creatingEvent, ...this._eventControllers];
+    this._creatingEvent = new EventController(
+        daysListElement,
+        this._onDataChange,
+        this._onViewChange,
+        this._destinations,
+        this._offers);
+
     this._creatingEvent.render(emptyEvent, EventControllerMode.ADDING);
   }
 
@@ -91,6 +107,14 @@ export default class TripController {
 
   show() {
     this._container.show();
+  }
+
+  setDestinations(destinations) {
+    this._destinations = destinations;
+  }
+
+  setOffers(offers) {
+    this._offers = offers;
   }
 
   _updateEvents() {
@@ -108,30 +132,45 @@ export default class TripController {
 
   _renderEvents(events, isSortedByDefault) {
     const daysListElement = this._daysListComponent.getElement();
+    this._eventControllers = renderEvents(
+        events,
+        daysListElement,
+        this._onDataChange,
+        this._onViewChange,
+        this._destinations,
+        this._offers,
+        isSortedByDefault);
 
-    this._eventControllers = renderEvents(events, daysListElement, this._onDataChange, this._onViewChange, isSortedByDefault);
+
   }
 
   _onDataChange(eventController, oldData, newData) {
     if (oldData === emptyEvent) {
       this._creatingEvent = null;
+
       if (newData === null) {
         eventController.destroy();
         this._updateEvents();
+
       } else {
         this._eventsModel.addEvent(newData);
         eventController.render(newData, EventControllerMode.ADDING);
         this._updateEvents();
       }
+
     } else if (newData === null) {
       this._eventsModel.removeEvent(oldData.id);
       this._updateEvents();
-    } else {
-      const isSuccess = this._eventsModel.updateEvent(oldData.id, newData);
 
-      if (isSuccess) {
-        eventController.render(newData, EventControllerMode.DEFAULT);
-      }
+    } else {
+      this._api.updateEvent(oldData.id, newData)
+        .then((eventModel) => {
+          const isSuccess = this._eventsModel.updateEvent(oldData.id, eventModel);
+
+          if (isSuccess) {
+            eventController.render(newData, EventControllerMode.DEFAULT);
+          }
+        });
     }
   }
 
@@ -142,6 +181,7 @@ export default class TripController {
   _onSortTypeChange(sortType) {
     let sortedEvents = [];
     const events = this._eventsModel.getEvents();
+    this._activeSortType = sortType;
 
     switch (sortType) {
       case SortType.PRICE:
@@ -149,8 +189,8 @@ export default class TripController {
         break;
       case SortType.TIME:
         sortedEvents = events.slice().sort((a, b) =>
-          Math.abs(b.dateStart.getTime() - b.dateEnd.getTime()) -
-          Math.abs(a.dateStart.getTime() - a.dateEnd.getTime()));
+          Math.abs(b.dateStart - b.dateEnd) -
+          Math.abs(a.dateStart - a.dateEnd));
         break;
       case SortType.DEFAULT:
         sortedEvents = [];
@@ -169,5 +209,6 @@ export default class TripController {
 
   _onFilterChange() {
     this._updateEvents();
+    this._onSortTypeChange(this._activeSortType);
   }
 }
