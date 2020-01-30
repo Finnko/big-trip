@@ -57,9 +57,27 @@ const menuItems = [
   },
 ];
 
+const Mode = {
+  DEFAULT: `default`,
+  EDIT: `edit`,
+  ADDING: `adding`,
+};
+
+const emptyEvent = {
+  type: `bus`,
+  city: ``,
+  photos: [],
+  description: ``,
+  eventOffers: [],
+  startDate: Date.now(),
+  endDate: Date.now(),
+  price: 0,
+  isFavorite: false
+};
+
 const EventTypes = {
-  TRANSFER: [`Bus`, `Drive`, `Flight`, `Ship`, `Taxi`, `Train`, `Transport`, `Trip`],
-  ACTIVITY: [`Check-in`, `Restaurant`, `Sightseeing`],
+  TRANSFER: [`bus`, `drive`, `flight`, `ship`, `taxi`, `train`, `transport`],
+  ACTIVITY: [`check-in`, `restaurant`, `sightseeing`],
 };
 
 const FilterType = {
@@ -68,4 +86,17 @@ const FilterType = {
   PAST: `past`,
 };
 
-export {eventOptions, EventTypes, monthNames, FilterType, menuItems, MenuTitles};
+const Method = {
+  GET: `GET`,
+  POST: `POST`,
+  PUT: `PUT`,
+  DELETE: `DELETE`,
+};
+
+const END_POINT = `https://htmlacademy-es-10.appspot.com/big-trip`;
+const AUTHORIZATION = `Basic gnr59199ik29889a`;
+
+export {
+  eventOptions, EventTypes, monthNames, FilterType, menuItems,
+  MenuTitles, Method, END_POINT, AUTHORIZATION, emptyEvent, Mode
+};
