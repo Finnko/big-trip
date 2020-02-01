@@ -5,7 +5,8 @@ import TripController from "./controllers/trip";
 import FilterController from "./controllers/filter";
 import EventsModel from "./models/events";
 import StatisticsComponent from './components/statistics.js';
-import {renderComponent, RenderPosition} from "./utils/render";
+import LoadingEvents from "./components/loading-events";
+import {removeElement, renderComponent, RenderPosition} from "./utils/render";
 import {menuItems, MenuTitles, AUTHORIZATION, END_POINT} from "./const";
 
 const api = new API(END_POINT, AUTHORIZATION);
@@ -18,6 +19,7 @@ const createEventElement = siteHeaderElement.querySelector(`.trip-main__event-ad
 
 const eventsModel = new EventsModel();
 
+const loadingEventsComponent = new LoadingEvents();
 const menuComponent = new MenuComponent(menuItems);
 const statisticsComponent = new StatisticsComponent(eventsModel);
 const boardComponent = new TripBoardComponent();
@@ -49,6 +51,7 @@ menuComponent.setChangeHandler((menuItem) => {
 
 renderComponent(controlElement, menuComponent, RenderPosition.BEFOREEND);
 renderComponent(contentElement, boardComponent, RenderPosition.BEFOREEND);
+renderComponent(contentElement, loadingEventsComponent, RenderPosition.BEFOREEND);
 renderComponent(contentElement, statisticsComponent, RenderPosition.BEFOREEND);
 
 statisticsComponent.hide();
@@ -56,6 +59,7 @@ filterController.render();
 
 api.getData()
   .then((data) => {
+    removeElement(loadingEventsComponent);
     eventsModel.setEvents(data.events);
     tripController.setDestinations(data.destinations);
     tripController.setOffers(data.offers);

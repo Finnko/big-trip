@@ -1,7 +1,10 @@
 import {monthNames} from "../const";
-import AbstractComponent from "./abstract-component";
+import AbstractSmartComponent from "./abstract-smart-component";
 
 const getTripDuration = (events) => {
+  if (!events) {
+    return ``;
+  }
   const dateStart = new Date(events[0].dateStart);
   const dateEnd = new Date(events[events.length - 1].dateEnd);
 
@@ -11,10 +14,19 @@ const getTripDuration = (events) => {
 };
 
 const getTotalTripPrice = (events) => {
-  return events.reduce((accum, currentValue) => accum + currentValue.price, 0);
+  if (!events) {
+    return 0;
+  }
+  return events
+    .reduce((totalCost, value) => totalCost + value.price +
+      value.eventOffers
+        .reduce((totalOffersCost, offer) => totalOffersCost + offer.price, 0), 0);
 };
 
 const getRoute = (events) => {
+  if (!events) {
+    return ``;
+  }
   const cities = events.map((item) => item.city);
 
   return cities.length > 3
@@ -40,14 +52,23 @@ const createTripInfoTemplate = (events) => {
   );
 };
 
-export default class TripInfo extends AbstractComponent {
-  constructor(days) {
+export default class TripInfo extends AbstractSmartComponent {
+  constructor(events) {
     super();
 
-    this._days = days;
+    this._events = events;
   }
 
   getTemplate() {
-    return createTripInfoTemplate(this._days);
+    return createTripInfoTemplate(this._events);
+  }
+
+  setEvents(events) {
+    this._events = events;
+
+    super.rerender();
+  }
+
+  recoveryListeners() {
   }
 }

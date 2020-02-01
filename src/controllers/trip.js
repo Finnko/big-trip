@@ -6,9 +6,8 @@ import {renderComponent, RenderPosition} from "../utils/render";
 import TripInfoComponent from "../components/trip-info";
 import EventController, {Mode as EventControllerMode, emptyEvent} from "./event";
 
-const renderTripInfo = (days) => {
-  const routeElement = document.querySelector(`.trip-info`);
-  return renderComponent(routeElement, new TripInfoComponent(days), RenderPosition.BEFOREEND);
+const getRouteContainer = () => {
+  return document.querySelector(`.trip-info`);
 };
 
 const renderEvents = (
@@ -58,6 +57,7 @@ export default class TripController {
     this._noEventsComponent = new NoEventsComponent();
     this._sortComponent = new SortComponent();
     this._daysListComponent = new TripDaysComponent();
+    this._tripInfoComponent = new TripInfoComponent();
 
     this._onDataChange = this._onDataChange.bind(this);
     this._onSortTypeChange = this._onSortTypeChange.bind(this);
@@ -71,6 +71,7 @@ export default class TripController {
   render() {
     const events = this._eventsModel.getEvents();
     const container = this._container.getElement();
+    const routeContainer = getRouteContainer();
 
     if (!events.length) {
       renderComponent(container, this._noEventsComponent, RenderPosition.BEFOREEND);
@@ -79,8 +80,9 @@ export default class TripController {
 
     renderComponent(container, this._sortComponent, RenderPosition.BEFOREEND);
     renderComponent(container, this._daysListComponent, RenderPosition.BEFOREEND);
+    renderComponent(routeContainer, this._tripInfoComponent, RenderPosition.BEFOREEND);
 
-    renderTripInfo(events);
+    this._tripInfoComponent.setEvents(events);
     this._renderEvents(events, true);
   }
 
@@ -115,6 +117,11 @@ export default class TripController {
 
   setOffers(offers) {
     this._offers = offers;
+  }
+
+  _updateTripInfo() {
+    const events = this._eventsModel.getEvents();
+    this._tripInfoComponent.setEvents(events);
   }
 
   _updateEvents() {
@@ -191,6 +198,7 @@ export default class TripController {
     } else {
       this._updateEvent(eventController, oldData, newData);
     }
+    this._updateTripInfo();
   }
 
   _onViewChange() {
