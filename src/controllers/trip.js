@@ -154,11 +154,11 @@ export default class TripController {
       });
   }
 
-  _updateEvent(eventController, id, newData) {
-    console.log(id);
-    this._api.updateEvent(id, newData)
+  _updateEvent(eventController, oldData, newData) {
+    newData.id = oldData.id;
+    this._api.updateEvent(oldData.id, newData)
       .then((eventModel) => {
-        const isSuccess = this._eventsModel.updateEvent(id, eventModel);
+        const isSuccess = this._eventsModel.updateEvent(oldData.id, eventModel);
 
         if (isSuccess) {
           eventController.render(newData, EventControllerMode.DEFAULT);
@@ -167,7 +167,6 @@ export default class TripController {
   }
 
   _deleteEvent(eventController, oldData) {
-    console.log(oldData);
     this._api.deleteEvent(oldData.id)
       .then(() => {
         this._eventsModel.removeEvent(oldData.id);
@@ -188,13 +187,9 @@ export default class TripController {
       }
 
     } else if (newData === null) {
-      this._api.deleteEvent(oldData.id)
-        .then(() => {
-          this._eventsModel.removeEvent(oldData.id);
-          this._updateEvents();
-        });
+      this._deleteEvent(eventController, oldData);
     } else {
-      this._updateEvent(eventController, oldData.id, newData);
+      this._updateEvent(eventController, oldData, newData);
     }
   }
 

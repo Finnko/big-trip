@@ -52,16 +52,14 @@ export default class Events {
   }
 
   addEvent(event) {
-    this._events = [].concat(event, this._events);
+    this._events = []
+      .concat(event, this._events)
+      .sort((a, b) => a.dateStart - b.dateEnd);
     this._callHandlers(this._dataChangeHandlers);
   }
 
   setFilterChangeHandler(handler) {
     this._filterChangeHandlers.push(handler);
-  }
-
-  setDataChangeHandler(handler) {
-    this._dataChangeHandlers.push(handler);
   }
 
   _callHandlers(handlers) {
