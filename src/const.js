@@ -57,6 +57,12 @@ const menuItems = [
   },
 ];
 
+const DefaultButtonText = {
+  SAVE: `Save`,
+  DELETE: `Delete`,
+  CANCEL: `Cancel`
+};
+
 const Mode = {
   DEFAULT: `default`,
   EDIT: `edit`,
@@ -97,6 +103,6 @@ const END_POINT = `https://htmlacademy-es-10.appspot.com/big-trip`;
 const AUTHORIZATION = `Basic gnr59199ik29889a`;
 
 export {
-  eventOptions, EventTypes, monthNames, FilterType, menuItems,
+  eventOptions, EventTypes, monthNames, FilterType, menuItems, DefaultButtonText,
   MenuTitles, Method, END_POINT, AUTHORIZATION, emptyEvent, Mode
 };

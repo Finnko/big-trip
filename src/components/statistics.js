@@ -3,7 +3,7 @@ import Chart from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import '../../node_modules/chart.js/dist/Chart.min.css';
 import {EventTypes} from "../const";
-import {getDatesHoursDiff} from "../utils/common";
+import {getDatesHoursDiff, getTripTitle} from "../utils/common";
 
 const ChartColors = {
   CHART_TEXT_COLOR: `#000000`,
@@ -167,11 +167,11 @@ const getTimeSpentData = (eventsData) => {
 
   eventsData
     .forEach((item) => {
-      if (!timeSpentMap[item.title]) {
-        timeSpentMap[item.title] = 0;
+      if (!timeSpentMap[item.type]) {
+        timeSpentMap[item.type] = 0;
       }
 
-      timeSpentMap[item.title] += getDatesHoursDiff(item.dateStart, item.dateEnd);
+      timeSpentMap[item.type] += getDatesHoursDiff(item.dateStart, item.dateEnd);
     });
 
   const labels = Object.keys(timeSpentMap);
