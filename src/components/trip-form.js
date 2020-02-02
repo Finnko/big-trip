@@ -1,12 +1,21 @@
 import AbstractSmartComponent from "./abstract-smart-component";
 import {EventTypes, DefaultButtonText} from "../const";
 import {Mode} from "../controllers/event";
-import {inputTagTimeFormatted, getUpperCaseFirstLetter, getTripTitle} from "../utils/common";
+import {inputTagTimeFormatted, getUpperCaseFirstLetter, getTripTitle, parseDate} from "../utils/common";
 import flatpickr from 'flatpickr';
 import nanoid from 'nanoid';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 const SHAKE_ANIMATION_TIMEOUT = 600;
+
+const flatpickrOptions = {
+  allowInput: true,
+  dateFormat: `d/m/y H:i`,
+  enableTime: true,
+  locale: {
+    firstDayOfWeek: 1,
+  },
+};
 
 const createImagesMarkup = (images) => {
   return images.map((image) => {
@@ -88,16 +97,24 @@ const createDestinationsMarkup = (destinations) => {
 };
 
 const createEditEventTemplate = (event, options = {}) => {
-  const {dateStart, dateEnd, eventOffers, isFavorite, price} = event;
-  const {currentCity, currentType, mode, currentDescription, destinations, offers, currentPhotos} = options;
-  const timeStartFormatted = inputTagTimeFormatted(dateStart);
-  const timeEndFormatted = inputTagTimeFormatted(dateEnd);
+  const {eventOffers, isFavorite} = event;
+  const {
+    currentCity, currentType, mode, currentDescription, destinations, offers,
+    currentPhotos, currentPrice, buttonText, currentDateStart, currentDateEnd
+  } = options;
+  const timeStartFormatted = inputTagTimeFormatted(currentDateStart);
+  const timeEndFormatted = inputTagTimeFormatted(currentDateEnd);
   const types = createTypesMarkup(EventTypes, currentType);
   const destinationList = createDestinationsMarkup(destinations);
   const currentOffers = createOffersMarkup(currentType, eventOffers, offers);
   const isAvailableOffers = checkOffers(currentType, offers);
   const images = createImagesMarkup(currentPhotos);
+
   const titlePlaceholder = getUpperCaseFirstLetter(getTripTitle(currentType, currentCity, `placeholder`));
+  const deleteButtonText = buttonText.DELETE;
+  const saveButtonText = buttonText.SAVE;
+  const cancelButtonText = buttonText.CANCEL;
+  const saveButtonDisableState = mode === Mode.ADDING;
 
   return (
     `<form class="trip-events__item event event--edit" action="#" method="post">
@@ -137,11 +154,11 @@ const createEditEventTemplate = (event, options = {}) => {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
+          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${currentPrice}">
         </div>
-        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
+        <button class="event__save-btn  btn  btn--blue" type="submit" ${saveButtonDisableState ? `disabled` : ``}>${saveButtonText}</button>
 
-        <button class="event__reset-btn" type="reset">${mode === Mode.ADDING ? `Cancel` : `Delete`}</button>
+        <button class="event__reset-btn" type="reset">${mode === Mode.ADDING ? cancelButtonText : deleteButtonText}</button>
 
         ${mode === Mode.ADDING ? `<div class="visually-hidden">` : ``}
           <input
@@ -205,12 +222,16 @@ export default class TripEdit extends AbstractSmartComponent {
     this._mode = mode;
     this._currentType = event.type;
     this._currentCity = event.city;
+    this._currentPrice = event.price;
     this._currentDescription = event.description;
     this._currentPhotos = event.photos;
+    this._currentDateStart = event.dateStart;
+    this._currentDateEnd = event.dateEnd;
     this._destinations = destinations;
     this._offers = offers;
+    this._buttonText = DefaultButtonText;
 
-    this._applyFlatpickr();
+    this._applyFlatpickrs();
     this._subscribeOnEvents();
   }
 
@@ -220,9 +241,13 @@ export default class TripEdit extends AbstractSmartComponent {
       currentCity: this._currentCity,
       currentDescription: this._currentDescription,
       currentPhotos: this._currentPhotos,
+      currentPrice: this._currentPrice,
+      currentDateStart: this._currentDateStart,
+      currentDateEnd: this._currentDateEnd,
       destinations: this._destinations,
       offers: this._offers,
       mode: this._mode,
+      buttonText: this._buttonText,
     });
   }
 
@@ -238,6 +263,22 @@ export default class TripEdit extends AbstractSmartComponent {
     }
 
     super.removeElement();
+  }
+
+  blockFormElements() {
+    const form = this.getElement();
+
+    form.querySelectorAll(`input`)
+      .forEach((element) => (element.disabled = true));
+
+    form.querySelectorAll(`button`)
+      .forEach((element) => (element.disabled = true));
+  }
+
+  setButtonText(data) {
+    this._buttonText = Object.assign({}, DefaultButtonText, data);
+
+    this.rerender();
   }
 
   setFavoriteButtonHandler(handler) {
@@ -274,7 +315,7 @@ export default class TripEdit extends AbstractSmartComponent {
   rerender() {
     super.rerender();
 
-    this._applyFlatpickr();
+    this._applyFlatpickrs();
   }
 
   reset() {
@@ -282,68 +323,135 @@ export default class TripEdit extends AbstractSmartComponent {
 
     this._currentType = event.type;
     this._currentCity = event.city;
+    this._currentPrice = event.price;
     this._currentDescription = event.description;
     this._currentPhotos = event.photos;
+    this._currentDateStart = event.dateStart;
+    this._currentDateEnd = event.dateEnd;
 
     this.rerender();
   }
 
-  _applyFlatpickr() {
-    if (this._flatpickr) {
-      this._flatpickr.destroy();
-      this._flatpickr = null;
+  shake() {
+    const element = this.getElement();
+
+    element.style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+
+    setTimeout(() => {
+      element.style.animation = ``;
+
+      this.setButtonText({
+        SAVE: DefaultButtonText.SAVE,
+        DELETE: DefaultButtonText.DELETE,
+      });
+    }, SHAKE_ANIMATION_TIMEOUT);
+  }
+
+  _applyFlatpickrs() {
+    this._deleteFlatpickrs();
+
+    const element = this.getElement();
+    const dateStartElement = element.querySelector(`#event-start-time-1`);
+    const dateEndElement = element.querySelector(`#event-end-time-1`);
+
+    this._flatpickrStartDate = flatpickr(dateStartElement,
+        Object.assign(
+            {},
+            flatpickrOptions,
+            {
+              defaultDate: this._event.dateStart,
+            }
+        )
+    );
+
+    this._flatpickrEndDate = flatpickr(dateEndElement,
+        Object.assign(
+            {},
+            flatpickrOptions,
+            {
+              defaultDate: this._event.dateEnd,
+              minDate: this._event.dateStart
+            }
+        )
+    );
+  }
+
+  _deleteFlatpickrs() {
+    if (this._flatpickrStartDate) {
+      this._flatpickrStartDate.destroy();
+      this._flatpickrStartDate = null;
     }
 
-    const dateStartElement = this.getElement().querySelector(`#event-start-time-1`);
-    const dateEndElement = this.getElement().querySelector(`#event-end-time-1`);
-
-    const setFlatpickr = (input, date) => {
-      this._flatpickr = flatpickr(input, {
-        allowInput: true,
-        defaultDate: date,
-        enableTime: true,
-        dateFormat: `d/m/y H:i`,
-        locale: {
-          firstDayOfWeek: 1,
-        },
-      });
-    };
-
-    setFlatpickr(dateStartElement, this._event.dateStart);
-    setFlatpickr(dateEndElement, this._event.dateEnd);
+    if (this._flatpickrEndDate) {
+      this._flatpickrEndDate.destroy();
+      this._flatpickrEndDate = null;
+    }
   }
 
   _subscribeOnEvents() {
     const element = this.getElement();
+    const saveButton = element.querySelector(`.event__save-btn`);
+    const typeElement = element.querySelector(`.event__type-list`);
+    const destinationElement = element.querySelector(`.event__input--destination`);
+    const priceElement = element.querySelector(`.event__input--price`);
+    const startTimeElement = element.querySelector(`#event-start-time-1`);
+    const endTimeElement = element.querySelector(`#event-end-time-1`);
 
-    element.querySelector(`.event__type-list`)
-      .addEventListener(`click`, (evt) => {
-        if (evt.target.tagName === `INPUT`) {
-          this._currentType = evt.target.value;
-          this.rerender();
-        }
-      });
+    const checkSaveButtonState = () => {
+      return (this._currentCity === `` || this._currentCity === undefined)
+        || (this._currentPrice <= 0 || isNaN(this._currentPrice));
+    };
 
-    element.querySelector(`.event__input--destination`)
-      .addEventListener(`input`, (evt) => {
-        const destination = this._destinations.find((item) => {
-          return item.name === evt.target.value;
-        });
-
-        if (!destination) {
-          return;
-        }
-
-        const targetCity = destination.name;
-
-        if (this._currentCity === targetCity) {
-          return;
-        }
-
-        this._currentDescription = destination.description;
-        this._currentPhotos = destination.pictures;
-        this._currentCity = targetCity;
+    typeElement.addEventListener(`click`, (evt) => {
+      if (evt.target.tagName === `INPUT`) {
+        this._currentType = evt.target.value;
         this.rerender();
+        saveButton.disabled = checkSaveButtonState();
+      }
+    });
+
+    startTimeElement.addEventListener(`change`, (evt) => {
+      this._currentDateStart = parseDate(evt.target.value);
+
+      const defaultDate = parseDate(this._currentDateEnd) > this._currentDateStart
+        ? this._currentDateEnd : this._currentDateStart;
+
+      this._flatpickrEndDate = flatpickr(endTimeElement,
+          Object.assign(
+              {},
+              flatpickrOptions,
+              {
+                defaultDate,
+                minDate: this._currentDateStart
+              }
+          )
+      );
+    });
+
+    endTimeElement.addEventListener(`change`, (evt) => {
+      this._currentDateEnd = parseDate(evt.target.value);
+    });
+
+    priceElement.addEventListener(`change`, (evt) => {
+      this._currentPrice = parseInt(evt.target.value, 10);
+      saveButton.disabled = checkSaveButtonState();
+    });
+
+    destinationElement.addEventListener(`change`, (evt) => {
+      const destination = this._destinations.find((item) => {
+        return item.name === evt.target.value;
       });
+
+      if (!destination) {
+        saveButton.disabled = true;
+        return;
+      }
+
+      this._currentDescription = destination.description;
+      this._currentPhotos = destination.pictures;
+      this._currentCity = destination.name;
+      saveButton.disabled = checkSaveButtonState();
+      this.rerender();
+    });
   }
 }

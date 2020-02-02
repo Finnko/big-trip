@@ -1,31 +1,3 @@
-const eventOptions = [
-  {
-    name: `Add luggage`,
-    type: `luggage`,
-    price: 30,
-  },
-  {
-    name: `Switch to comfort`,
-    type: `comfort`,
-    price: 100,
-  },
-  {
-    name: `Add meal`,
-    type: `meal`,
-    price: 15,
-  },
-  {
-    name: `Choose seats`,
-    type: `seats`,
-    price: 5,
-  },
-  {
-    name: `Travel by train`,
-    type: `train`,
-    price: 40,
-  },
-];
-
 const monthNames = [
   `Jan`,
   `Feb`,
@@ -61,6 +33,11 @@ const DefaultButtonText = {
   SAVE: `Save`,
   DELETE: `Delete`,
   CANCEL: `Cancel`
+};
+
+const ActionButtonText = {
+  SAVE: `Saving...`,
+  DELETE: `Deleting...`
 };
 
 const Mode = {
@@ -100,9 +77,9 @@ const Method = {
 };
 
 const END_POINT = `https://htmlacademy-es-10.appspot.com/big-trip`;
-const AUTHORIZATION = `Basic gnr59199ik29889a`;
+const AUTHORIZATION = `Basic gnr878991999a`;
 
 export {
-  eventOptions, EventTypes, monthNames, FilterType, menuItems, DefaultButtonText,
-  MenuTitles, Method, END_POINT, AUTHORIZATION, emptyEvent, Mode
+  EventTypes, monthNames, FilterType, menuItems, DefaultButtonText,
+  MenuTitles, Method, END_POINT, AUTHORIZATION, emptyEvent, Mode, ActionButtonText
 };

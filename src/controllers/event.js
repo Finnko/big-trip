@@ -3,7 +3,7 @@ import TripEventEditComponent from "../components/trip-form";
 import EventModel from "../models/event";
 import {renderComponent, replaceComponent, removeElement, RenderPosition} from '../utils/render.js';
 import {parseDate} from "../utils/common";
-import {emptyEvent, Mode} from "../const";
+import {emptyEvent, Mode, ActionButtonText} from "../const";
 import moment from 'moment';
 import he from 'he';
 
@@ -79,10 +79,14 @@ export default class EventController {
 
     this._tripEventEditComponent.setFormSubmitHandler((evt) => {
       evt.preventDefault();
+
       const formData = this._tripEventEditComponent.getData();
       const form = this._tripEventEditComponent.getElement();
       const data = parseFormData(formData, form, this._destinations);
-      console.log(`parseData`, data);
+
+      this._tripEventEditComponent.setButtonText({
+        SAVE: ActionButtonText.SAVE
+      });
 
       this._onDataChange(this, this._event, data);
     });
@@ -120,6 +124,14 @@ export default class EventController {
     document.removeEventListener(`keydown`, this._onEscKeyDown);
   }
 
+  blockForm() {
+    this._tripEventEditComponent.blockFormElements();
+  }
+
+  shake() {
+    this._tripEventEditComponent.shake();
+  }
+
   setDefaultView() {
     if (this._mode !== Mode.DEFAULT) {
       this._replaceFormToEvent();
@@ -148,6 +160,10 @@ export default class EventController {
     if (mode === Mode.ADDING) {
       this._onDataChange(this, emptyEvent, null);
     } else {
+      this._tripEventEditComponent.setButtonText({
+        DELETE: ActionButtonText.DELETE
+      });
+
       this._onDataChange(this, this._event, null);
     }
   }
