@@ -82,13 +82,13 @@ export default class EventController {
 
       const formData = this._tripEventEditComponent.getData();
       const form = this._tripEventEditComponent.getElement();
-      const data = parseFormData(formData, form, this._destinations);
+      const parsedFormData = parseFormData(formData, form, this._destinations);
 
       this._tripEventEditComponent.setButtonText({
         SAVE: ActionButtonText.SAVE
       });
 
-      this._onDataChange(this, this._event, data);
+      this._onDataChange(this, this._event, parsedFormData);
     });
 
     this._tripEventEditComponent.setDeleteButtonClickHandler(() => {

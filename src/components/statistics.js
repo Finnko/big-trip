@@ -126,10 +126,10 @@ const createStatisticsTemplate = () => {
   );
 };
 
-const getMoneyData = (eventsData) => {
+const getMoneyData = (events) => {
   const moneyMap = {};
 
-  eventsData.forEach((item) => {
+  events.forEach((item) => {
     if (!moneyMap[item.type]) {
       moneyMap[item.type] = 0;
     }
@@ -143,11 +143,11 @@ const getMoneyData = (eventsData) => {
   return {data, labels};
 };
 
-const getTransportData = (eventsData) => {
+const getTransportData = (events) => {
   const typesMap = {};
 
-  eventsData
-    .filter((item) => EventTypes.TRANSFER.includes(item.type))
+  events
+    .filter((item) => EventTypes.TRANSFERS.includes(item.type))
     .forEach((item) => {
       if (!typesMap[item.type]) {
         typesMap[item.type] = 0;
@@ -162,10 +162,10 @@ const getTransportData = (eventsData) => {
   return {data, labels};
 };
 
-const getTimeSpentData = (eventsData) => {
+const getTimeSpentData = (events) => {
   const timeSpentMap = {};
 
-  eventsData
+  events
     .forEach((item) => {
       if (!timeSpentMap[item.type]) {
         timeSpentMap[item.type] = 0;
@@ -214,9 +214,9 @@ export default class StatisticsComponent extends AbstractSmartComponent {
   _renderCharts() {
     const element = this.getElement();
 
-    const moneyCtx = element.querySelector(`.statistics__chart--money`);
-    const transportCtx = element.querySelector(`.statistics__chart--transport`);
-    const timeCtx = element.querySelector(`.statistics__chart--time`);
+    const moneyCtxElement = element.querySelector(`.statistics__chart--money`);
+    const transportCtxElement = element.querySelector(`.statistics__chart--transport`);
+    const timeCtxElement = element.querySelector(`.statistics__chart--time`);
 
     this._resetCharts();
 
@@ -225,21 +225,21 @@ export default class StatisticsComponent extends AbstractSmartComponent {
     const timeSpentChartData = getTimeSpentData(this._events.getEvents());
 
     this._moneyChart = renderChart(
-        moneyCtx,
+        moneyCtxElement,
         moneyChartData.data,
         moneyChartData.labels,
         ChartTitles.MONEY,
         (value) => `€ ${value}`);
 
     this._transportChart = renderChart(
-        transportCtx,
+        transportCtxElement,
         transportChartData.data,
         transportChartData.labels,
         ChartTitles.TRANSPORT,
         (value) => `x${value}`);
 
     this._timeSpentChart = renderChart(
-        timeCtx,
+        timeCtxElement,
         timeSpentChartData.data,
         timeSpentChartData.labels,
         ChartTitles.TIME,

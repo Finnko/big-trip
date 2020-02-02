@@ -1,15 +1,15 @@
 export default class EventModel {
-  constructor(data) {
-    this.id = data[`id`];
-    this.type = data[`type`];
-    this.city = data[`destination`][`name`];
-    this.dateStart = new Date(data[`date_from`]).getTime();
-    this.dateEnd = new Date(data[`date_to`]).getTime();
-    this.eventOffers = data[`offers`];
-    this.photos = data[`destination`][`pictures`];
-    this.description = data[`destination`][`description`];
-    this.price = data[`base_price`];
-    this.isFavorite = data[`is_favorite`];
+  constructor(event) {
+    this.id = event[`id`];
+    this.type = event[`type`];
+    this.city = event[`destination`][`name`];
+    this.dateStart = new Date(event[`date_from`]).getTime();
+    this.dateEnd = new Date(event[`date_to`]).getTime();
+    this.eventOffers = event[`offers`];
+    this.photos = event[`destination`][`pictures`];
+    this.description = event[`destination`][`description`];
+    this.price = event[`base_price`];
+    this.isFavorite = event[`is_favorite`];
   }
 
   toRAW() {
@@ -29,15 +29,15 @@ export default class EventModel {
     };
   }
 
-  static parseEvent(data) {
-    return new EventModel(data);
+  static parseEvent(event) {
+    return new EventModel(event);
   }
 
-  static parseEvents(data) {
-    return data.map((item) => EventModel.parseEvent(item));
+  static parseEvents(events) {
+    return events.map((item) => EventModel.parseEvent(item));
   }
 
-  static clone(data) {
-    return new EventModel(data.toRAW());
+  static clone(event) {
+    return new EventModel(event.toRAW());
   }
 }
