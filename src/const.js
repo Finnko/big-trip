@@ -60,7 +60,7 @@ const emptyEvent = {
 
 const EventTypes = {
   TRANSFERS: [`bus`, `drive`, `flight`, `ship`, `taxi`, `train`, `transport`],
-  ACTIVITES: [`check-in`, `restaurant`, `sightseeing`],
+  ACTIVITIES: [`check-in`, `restaurant`, `sightseeing`],
 };
 
 const FilterType = {
@@ -77,7 +77,7 @@ const Method = {
 };
 
 const END_POINT = `https://htmlacademy-es-10.appspot.com/big-trip`;
-const AUTHORIZATION = `Basic gnr878951999a`;
+const AUTHORIZATION = `Basic gnr878891999a`;
 
 export {
   EventTypes, monthNames, FilterType, menuItems, DefaultButtonText,
