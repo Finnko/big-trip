@@ -140,8 +140,38 @@ export default class TripController {
         this._destinations,
         this._offers,
         isSortedByDefault);
+  }
 
+  _createEvent(eventController, newData) {
+    this._api.createEvent(newData)
+      .then((eventModel) => {
+        this._eventsModel.addEvent(eventModel);
+        eventController.render(eventModel, EventControllerMode.DEFAULT);
 
+        this._eventControllers = [].concat(eventController, this._eventControllers);
+
+        this._updateEvents();
+      });
+  }
+
+  _updateEvent(eventController, oldData, newData) {
+    newData.id = oldData.id;
+    this._api.updateEvent(oldData.id, newData)
+      .then((eventModel) => {
+        const isSuccess = this._eventsModel.updateEvent(oldData.id, eventModel);
+
+        if (isSuccess) {
+          eventController.render(newData, EventControllerMode.DEFAULT);
+        }
+      });
+  }
+
+  _deleteEvent(eventController, oldData) {
+    this._api.deleteEvent(oldData.id)
+      .then(() => {
+        this._eventsModel.removeEvent(oldData.id);
+        this._updateEvents();
+      });
   }
 
   _onDataChange(eventController, oldData, newData) {
@@ -153,24 +183,13 @@ export default class TripController {
         this._updateEvents();
 
       } else {
-        this._eventsModel.addEvent(newData);
-        eventController.render(newData, EventControllerMode.ADDING);
-        this._updateEvents();
+        this._createEvent(eventController, newData);
       }
 
     } else if (newData === null) {
-      this._eventsModel.removeEvent(oldData.id);
-      this._updateEvents();
-
+      this._deleteEvent(eventController, oldData);
     } else {
-      this._api.updateEvent(oldData.id, newData)
-        .then((eventModel) => {
-          const isSuccess = this._eventsModel.updateEvent(oldData.id, eventModel);
-
-          if (isSuccess) {
-            eventController.render(newData, EventControllerMode.DEFAULT);
-          }
-        });
+      this._updateEvent(eventController, oldData, newData);
     }
   }
 

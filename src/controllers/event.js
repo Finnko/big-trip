@@ -56,9 +56,10 @@ export default class EventController {
     const oldTripEventComponent = this._tripEventComponent;
     const oldTripEventEditComponent = this._tripEventEditComponent;
     this._mode = mode;
+    this._event = event;
 
-    this._tripEventComponent = new TripEventComponent(event);
-    this._tripEventEditComponent = new TripEventEditComponent(event, this._mode, this._destinations, this._offers);
+    this._tripEventComponent = new TripEventComponent(this._event);
+    this._tripEventEditComponent = new TripEventEditComponent(this._event, this._mode, this._destinations, this._offers);
 
     this._tripEventComponent.setEditButtonHandler(() => {
       this._replaceEventToForm();
@@ -66,10 +67,10 @@ export default class EventController {
     });
 
     this._tripEventEditComponent.setFavoriteButtonHandler(() => {
-      const newEvent = EventModel.clone(event);
+      const newEvent = EventModel.clone(this._event);
       newEvent.isFavorite = !newEvent.isFavorite;
 
-      this._onDataChange(this, event, newEvent);
+      this._onDataChange(this, this._event, newEvent);
     });
 
     this._tripEventEditComponent.setCloseButtonClickHandler(() => {
@@ -81,8 +82,9 @@ export default class EventController {
       const formData = this._tripEventEditComponent.getData();
       const form = this._tripEventEditComponent.getElement();
       const data = parseFormData(formData, form, this._destinations);
+      console.log(`parseData`, data);
 
-      this._onDataChange(this, event, data);
+      this._onDataChange(this, this._event, data);
     });
 
     this._tripEventEditComponent.setDeleteButtonClickHandler(() => {
