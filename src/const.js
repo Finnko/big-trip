@@ -35,6 +35,11 @@ const DefaultButtonText = {
   CANCEL: `Cancel`
 };
 
+const ActionButtonText = {
+  SAVE: `Saving...`,
+  DELETE: `Deleting...`
+};
+
 const Mode = {
   DEFAULT: `default`,
   EDIT: `edit`,
@@ -72,9 +77,9 @@ const Method = {
 };
 
 const END_POINT = `https://htmlacademy-es-10.appspot.com/big-trip`;
-const AUTHORIZATION = `Basic gnr59199ik29889a`;
+const AUTHORIZATION = `Basic gnr878991999a`;
 
 export {
   EventTypes, monthNames, FilterType, menuItems, DefaultButtonText,
-  MenuTitles, Method, END_POINT, AUTHORIZATION, emptyEvent, Mode
+  MenuTitles, Method, END_POINT, AUTHORIZATION, emptyEvent, Mode, ActionButtonText
 };

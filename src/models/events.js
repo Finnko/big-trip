@@ -14,6 +14,10 @@ export default class Events {
     return getEventsByFilter(this._events, this._activeFilterType);
   }
 
+  getEventsAll() {
+    return this._events
+  }
+
   setEvents(events) {
     this._events = Array.from(events);
   }
@@ -60,6 +64,10 @@ export default class Events {
 
   setFilterChangeHandler(handler) {
     this._filterChangeHandlers.push(handler);
+  }
+
+  setDataChangeHandler(handler) {
+    this._dataChangeHandlers.push(handler);
   }
 
   _callHandlers(handlers) {

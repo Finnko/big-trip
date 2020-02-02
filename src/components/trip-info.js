@@ -2,7 +2,7 @@ import {monthNames} from "../const";
 import AbstractSmartComponent from "./abstract-smart-component";
 
 const getTripDuration = (events) => {
-  if (!events) {
+  if (!events || typeof events === `undefined`) {
     return ``;
   }
   const dateStart = new Date(events[0].dateStart);
@@ -14,7 +14,7 @@ const getTripDuration = (events) => {
 };
 
 const getTotalTripPrice = (events) => {
-  if (!events) {
+  if (!events || typeof events === `undefined`) {
     return 0;
   }
   return events
@@ -24,7 +24,7 @@ const getTotalTripPrice = (events) => {
 };
 
 const getRoute = (events) => {
-  if (!events) {
+  if (!events || typeof events === `undefined`) {
     return ``;
   }
   const cities = events.map((item) => item.city);
