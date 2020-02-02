@@ -3,7 +3,7 @@ import Chart from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import '../../node_modules/chart.js/dist/Chart.min.css';
 import {EventTypes} from "../const";
-import {getDatesHoursDiff, getTripTitle} from "../utils/common";
+import {getDatesHoursDiff} from "../utils/common";
 
 const ChartColors = {
   CHART_TEXT_COLOR: `#000000`,
