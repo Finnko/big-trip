@@ -1,6 +1,8 @@
 import {monthNames} from "../const";
 import AbstractSmartComponent from "./abstract-smart-component";
 
+const CITIES_MAX_TO_SHOW = 3;
+
 const getTripDuration = (events) => {
   if (!events || typeof events === `undefined`) {
     return ``;
@@ -29,7 +31,7 @@ const getRoute = (events) => {
   }
   const cities = events.map((item) => item.city);
 
-  return cities.length > 3
+  return cities.length > CITIES_MAX_TO_SHOW
     ? `${cities[0]} &mdash; &hellip; &mdash; ${cities[cities.length - 1]}`
     : cities.join(` &mdash; `);
 };

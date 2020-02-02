@@ -19,20 +19,20 @@ const renderEvents = (
     offers,
     isSortedByDefault) => {
   const eventControllers = [];
-  let dates = isSortedByDefault
+  const dates = isSortedByDefault
     ? Array.from(new Set(events.map((item) => new Date(item.dateStart).toDateString())))
     : [1];
 
   dates.forEach((date, dateIndex) => {
     const dayComponent = isSortedByDefault ? new TripDayComponent(date, dateIndex + 1) : new TripDayComponent();
-    const eventsListContainer = dayComponent.getElement().querySelector(`.trip-events__list`);
+    const eventsListContainerElement = dayComponent.getElement().querySelector(`.trip-events__list`);
 
     events
       .filter((item) => {
         return isSortedByDefault ? new Date(item.dateStart).toDateString() === date : item;
       })
       .forEach((item) => {
-        const eventController = new EventController(eventsListContainer, onDataChange, onViewChange, destinations, offers);
+        const eventController = new EventController(eventsListContainerElement, onDataChange, onViewChange, destinations, offers);
         eventController.render(item, EventControllerMode.DEFAULT);
         eventControllers.push(eventController);
       });
@@ -71,7 +71,7 @@ export default class TripController {
   render() {
     const events = this._eventsModel.getEvents();
     const container = this._container.getElement();
-    const routeContainer = getRouteContainer();
+    const routeContainerElement = getRouteContainer();
 
     if (!events.length) {
       this._noEventsComponent = new NoEventsComponent();
@@ -81,7 +81,7 @@ export default class TripController {
 
     renderComponent(container, this._sortComponent, RenderPosition.BEFOREEND);
     renderComponent(container, this._daysListComponent, RenderPosition.BEFOREEND);
-    renderComponent(routeContainer, this._tripInfoComponent, RenderPosition.BEFOREEND);
+    renderComponent(routeContainerElement, this._tripInfoComponent, RenderPosition.BEFOREEND);
 
     this._renderEvents(events, true);
   }
@@ -147,9 +147,9 @@ export default class TripController {
     this._tripInfoComponent.setEvents(events);
   }
 
-  _createEvent(eventController, newData) {
+  _createEvent(eventController, newEvent) {
     eventController.blockForm();
-    this._api.createEvent(newData)
+    this._api.createEvent(newEvent)
       .then((eventModel) => {
         this._eventsModel.addEvent(eventModel);
         eventController.render(eventModel, EventControllerMode.DEFAULT);
@@ -170,15 +170,15 @@ export default class TripController {
     }
   }
 
-  _updateEvent(eventController, oldData, newData) {
+  _updateEvent(eventController, oldEvent, newEvent) {
     eventController.blockForm();
-    newData.id = oldData.id;
-    this._api.updateEvent(oldData.id, newData)
+    newEvent.id = oldEvent.id;
+    this._api.updateEvent(oldEvent.id, newEvent)
       .then((eventModel) => {
-        const isSuccess = this._eventsModel.updateEvent(oldData.id, eventModel);
+        const isSuccess = this._eventsModel.updateEvent(oldEvent.id, eventModel);
 
         if (isSuccess) {
-          eventController.render(newData, EventControllerMode.DEFAULT);
+          eventController.render(newEvent, EventControllerMode.DEFAULT);
         }
       })
       .catch(() => {
@@ -186,11 +186,11 @@ export default class TripController {
       });
   }
 
-  _deleteEvent(eventController, oldData) {
+  _deleteEvent(eventController, oldEvent) {
     eventController.blockForm();
-    this._api.deleteEvent(oldData.id)
+    this._api.deleteEvent(oldEvent.id)
       .then(() => {
-        this._eventsModel.removeEvent(oldData.id);
+        this._eventsModel.removeEvent(oldEvent.id);
         this._updateEvents();
       })
       .catch(() => {
@@ -198,22 +198,22 @@ export default class TripController {
       });
   }
 
-  _onDataChange(eventController, oldData, newData) {
-    if (oldData === emptyEvent) {
+  _onDataChange(eventController, oldEvent, newEvent) {
+    if (oldEvent === emptyEvent) {
       this._creatingEvent = null;
 
-      if (newData === null) {
+      if (newEvent === null) {
         eventController.destroy();
         this._updateEvents();
 
       } else {
-        this._createEvent(eventController, newData);
+        this._createEvent(eventController, newEvent);
       }
 
-    } else if (newData === null) {
-      this._deleteEvent(eventController, oldData);
+    } else if (newEvent === null) {
+      this._deleteEvent(eventController, oldEvent);
     } else {
-      this._updateEvent(eventController, oldData, newData);
+      this._updateEvent(eventController, oldEvent, newEvent);
     }
 
     this._tripInfoComponent.setEvents(this._eventsModel.getEvents());
