@@ -208,7 +208,7 @@ const createEditEventTemplate = (event, options = {}) => {
   );
 };
 
-export default class TripEdit extends AbstractSmartComponent {
+export default class TripForm extends AbstractSmartComponent {
   constructor(event, mode, destinations, offers) {
     super();
 
@@ -390,7 +390,7 @@ export default class TripEdit extends AbstractSmartComponent {
 
   _subscribeOnEvents() {
     const element = this.getElement();
-    const saveButton = element.querySelector(`.event__save-btn`);
+    const saveButtonElement = element.querySelector(`.event__save-btn`);
     const typeElement = element.querySelector(`.event__type-list`);
     const destinationElement = element.querySelector(`.event__input--destination`);
     const priceElement = element.querySelector(`.event__input--price`);
@@ -406,7 +406,7 @@ export default class TripEdit extends AbstractSmartComponent {
       if (evt.target.tagName === `INPUT`) {
         this._currentType = evt.target.value;
         this.rerender();
-        saveButton.disabled = checkSaveButtonState();
+        saveButtonElement.disabled = checkSaveButtonState();
       }
     });
 
@@ -434,7 +434,11 @@ export default class TripEdit extends AbstractSmartComponent {
 
     priceElement.addEventListener(`change`, (evt) => {
       this._currentPrice = parseInt(evt.target.value, 10);
-      saveButton.disabled = checkSaveButtonState();
+
+      if (isNaN(this._currentPrice)) {
+        this._currentPrice = 0;
+      }
+      saveButtonElement.disabled = checkSaveButtonState();
     });
 
     destinationElement.addEventListener(`change`, (evt) => {
@@ -443,14 +447,14 @@ export default class TripEdit extends AbstractSmartComponent {
       });
 
       if (!destination) {
-        saveButton.disabled = true;
+        saveButtonElement.disabled = true;
         return;
       }
 
       this._currentDescription = destination.description;
       this._currentPhotos = destination.pictures;
       this._currentCity = destination.name;
-      saveButton.disabled = checkSaveButtonState();
+      saveButtonElement.disabled = checkSaveButtonState();
       this.rerender();
     });
   }

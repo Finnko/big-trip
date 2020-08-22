@@ -23,7 +23,7 @@ const createMenuTemplate = (items) => {
   );
 };
 
-export default class SiteMenu extends AbstractComponent {
+export default class Menu extends AbstractComponent {
   constructor(menuItems) {
     super();
     this._menuItems = menuItems;

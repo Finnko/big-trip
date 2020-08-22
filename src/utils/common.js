@@ -1,22 +1,18 @@
 import moment from "moment";
 import {EventTypes} from "../const";
 
+const DECIMAL_VALUE = 10;
+
 const getUpperCaseFirstLetter = (string) => string.substring(0, 1).toUpperCase() + string.slice(1);
 
 const getTripTitle = (type, city, modifier = `title`) => {
-  let delimiter = ``;
-
-  if (EventTypes.TRANSFER.includes(type)) {
-    delimiter = `to`;
-  } else {
-    delimiter = `in`;
-  }
+  const delimiter = EventTypes.TRANSFERS.includes(type) ? `to` : `in`;
 
   if (modifier === `title`) {
     return `${type} ${delimiter} ${city}`;
-  } else {
-    return `${type} ${delimiter}`;
   }
+
+  return `${type} ${delimiter}`;
 };
 
 const parseDate = (dateString) => moment(dateString, `DD/MM/YY HH:mm`).valueOf();
@@ -26,7 +22,7 @@ const castTimeFormat = (value) => {
 };
 
 const castDurationFormat = (value, liter = `D`) => {
-  return value < 10 ? `0${value}${liter}` : `${value}${liter}`;
+  return value < DECIMAL_VALUE ? `0${value}${liter}` : `${value}${liter}`;
 };
 
 const timeTagFormatted = (date) => {
