@@ -10,7 +10,7 @@ module.exports = {
     filename: `bundle.js`,
     path: path.join(__dirname, `public`)
   },
-  devtool: isProd ? `eval-source-map` : false,
+  devtool: !isProd ? `eval-source-map` : false,
   devServer: {
     contentBase: path.join(__dirname, `public`),
     publicPath: `http://localhost:8080/`,
