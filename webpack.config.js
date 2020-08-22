@@ -1,14 +1,16 @@
 const path = require(`path`);
 const MomentLocalesPlugin = require(`moment-locales-webpack-plugin`);
 
+const isProd = process.argv.indexOf(`-p`) !== -1;
+
 module.exports = {
-  mode: `development`,
+  mode: isProd ? `production` : `development`,
   entry: `./src/main.js`,
   output: {
     filename: `bundle.js`,
     path: path.join(__dirname, `public`)
   },
-  devtool: `source-map`,
+  devtool: isProd ? `eval-source-map` : false,
   devServer: {
     contentBase: path.join(__dirname, `public`),
     publicPath: `http://localhost:8080/`,
